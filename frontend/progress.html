@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Progress - AI STUDY ASSISTANT</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/mobile.css">
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">AI</div>
+            <span>AI STUDY ASSISTANT</span>
+        </div>
+
+        <nav>
+
+            <a href="/app" class="nav-item">
+                <span>⌂</span>
+                Dashboard
+            </a>
+
+            <a href="/chat.html" class="nav-item">
+                <span>◉</span>
+                AI Chat
+            </a>
+
+            <a href="/quiz.html" class="nav-item">
+                <span>?</span>
+                Quizzes
+            </a>
+
+            <a href="/progress.html" class="nav-item active">
+                <span>↗</span>
+                Progress
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                System Online
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <span class="eyebrow">LEARNING ANALYTICS</span>
+
+                <h1>Study Progress</h1>
+
+                <p>
+                    See how you're performing and where to focus next.
+                </p>
+            </div>
+
+            <div class="profile">
+                <div class="avatar" id="userAvatar">G</div>
+            </div>
+
+        </header>
+
+
+        <!-- PERFORMANCE HERO -->
+
+        <section class="progress-hero">
+
+            <div class="progress-hero-content">
+
+                <div>
+
+                    <span class="hero-label">
+                        OVERALL PERFORMANCE
+                    </span>
+
+                    <h2 id="performanceTitle">
+                        Keep building your knowledge.
+                    </h2>
+
+                    <p id="performanceMessage">
+                        Complete quizzes to start tracking your learning progress.
+                    </p>
+
+                </div>
+
+                <div class="hero-score">
+
+                    <div class="score-ring">
+
+                        <svg viewBox="0 0 120 120">
+
+                            <circle
+                                class="score-ring-bg"
+                                cx="60"
+                                cy="60"
+                                r="52">
+                            </circle>
+
+                            <circle
+                                id="scoreRing"
+                                class="score-ring-progress"
+                                cx="60"
+                                cy="60"
+                                r="52">
+                            </circle>
+
+                        </svg>
+
+                        <div class="score-ring-value">
+
+                            <strong id="heroPercentage">
+                                0%
+                            </strong>
+
+                            <span>average</span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- QUICK STATS -->
+
+        <section class="progress-stats">
+
+            <div class="progress-stat-card">
+
+                <div class="progress-stat-icon">📝</div>
+
+                <div>
+                    <span>QUIZZES</span>
+                    <strong id="totalAttempts">0</strong>
+                </div>
+
+            </div>
+
+
+            <div class="progress-stat-card">
+
+                <div class="progress-stat-icon">🎯</div>
+
+                <div>
+                    <span>QUESTIONS</span>
+                    <strong id="totalQuestions">0</strong>
+                </div>
+
+            </div>
+
+
+            <div class="progress-stat-card">
+
+                <div class="progress-stat-icon">✓</div>
+
+                <div>
+                    <span>CORRECT</span>
+                    <strong id="totalCorrect">0</strong>
+                </div>
+
+            </div>
+
+
+            <div class="progress-stat-card">
+
+                <div class="progress-stat-icon">⚡</div>
+
+                <div>
+                    <span>ACCURACY</span>
+                    <strong id="accuracyPercentage">0%</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- TOPIC PERFORMANCE -->
+
+        <section class="section progress-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        KNOWLEDGE MAP
+                    </span>
+
+                    <h2>Topic Performance</h2>
+
+                    <p>
+                        See which areas are strong and which ones need more practice.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div id="topicPerformance" class="topic-grid">
+
+                <div class="progress-empty-card">
+
+                    <div class="empty-icon">📚</div>
+
+                    <h3>Your topic map is waiting</h3>
+
+                    <p>
+                        Complete a quiz to see your performance by topic.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- BOTTOM GRID -->
+
+        <section class="progress-bottom-grid">
+
+
+            <!-- WEAK TOPICS -->
+
+            <div class="progress-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            FOCUS AREAS
+                        </span>
+
+                        <h2>Weak Topics</h2>
+
+                    </div>
+
+                    <span class="panel-icon">⚠</span>
+
+                </div>
+
+
+                <div id="weakTopics">
+
+                    <div class="progress-empty-small">
+
+                        <span>✓</span>
+
+                        <p>
+                            No weak topics detected yet.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RECOMMENDATIONS -->
+
+            <div class="progress-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            AI GUIDANCE
+                        </span>
+
+                        <h2>Next Steps</h2>
+
+                    </div>
+
+                    <span class="panel-icon">✦</span>
+
+                </div>
+
+
+                <div id="recommendations">
+
+                    <div class="progress-empty-small">
+
+                        <span>→</span>
+
+                        <p>
+                            Complete a quiz to receive study recommendations.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="/js/progress.js"></script>
+
+<script src="/js/profile.js"></script>
+    <script src="/js/mobile.js"></script>
+</body>
+
+</html>

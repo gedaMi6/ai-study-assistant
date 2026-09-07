@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat - AI STUDY ASSISTANT</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/mobile.css">
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">AI</div>
+            <span>AI STUDY ASSISTANT</span>
+        </div>
+
+        <nav>
+            <a href="/app" class="nav-item">
+                <span>⌂</span>
+                Dashboard
+            </a>
+
+            <a href="/chat.html" class="nav-item active">
+                <span>◉</span>
+                AI Chat
+            </a>
+
+            <a href="/quiz.html" class="nav-item">
+                <span>?</span>
+                Quizzes
+            </a>
+
+            <a href="/progress.html" class="nav-item">
+                <span>↗</span>
+                Progress
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="system-status">
+                <span class="status-dot"></span>
+                System Online
+            </div>
+        </div>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <h1>AI Study Chat</h1>
+                <p>Ask questions about your study materials.</p>
+            </div>
+
+            <div class="profile">
+                <div class="avatar" id="userAvatar">G</div>
+            </div>
+        </header>
+
+
+        <section class="section">
+
+            <div class="section-header">
+                <div>
+                    <span class="eyebrow">AI STUDY ASSISTANT</span>
+                    <h2>Ask your study assistant</h2>
+                    <p>
+                        Ask questions about the documents you have uploaded.
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="chat-container">
+
+                <aside class="chat-history-panel">
+
+                    <button
+                        type="button"
+                        id="sidebarToggle"
+                        class="sidebar-toggle-button"
+                        aria-label="Collapse sidebar"
+                        title="Collapse sidebar"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M15 6l-6 6 6 6"></path>
+                        </svg>
+                    </button>
+
+
+                    <div class="recent-chats-header">
+                        <span>Recent chats</span>
+                    <div class="recent-chats-header">
+                       <span>Recent chats</span>
+
+                       <button
+                           type="button"
+                           id="newChatButton"
+                           class="new-chat-button"
+                           aria-label="New chat"
+                           title="New chat"
+                       >
+                           <svg
+                              viewBox="0 0 24 24"
+                              aria-hidden="true"
+                           >
+                              <path d="M12 5v14"></path>
+                              <path d="M5 12h14"></path>
+                           </svg>
+
+                           <span>New chat</span>
+                        </button>
+                    </div>
+
+
+                    <div
+                        id="recentChatsList"
+                        class="recent-chats-list"
+                    ></div>
+
+                </aside>
+
+
+                <div class="chat-main-panel">
+    <button
+        type="button"
+        id="scrollToBottomButton"
+        class="scroll-to-bottom-button"
+        aria-label="Scroll to latest message"
+        title="Scroll to latest message"
+   >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5v14"></path>
+            <path d="M6 13l6 6 6-6"></path>
+        </svg>
+    </button>
+                    <div id="chatMessages" class="chat-messages">
+
+                        <div class="chat-message assistant-message">
+                            <div class="message-avatar">AI</div>
+
+                            <div class="message-content">
+                                <strong>AI STUDY ASSISTANT</strong>
+                                <p>
+                                    Hi Geda! Ask me a question about your study
+                                    materials and I'll answer using your documents.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <form id="chatForm" class="chat-input-area">
+
+                    <input
+                        type="text"
+                        id="questionInput"
+                        placeholder="Ask a question about your study material..."
+                        autocomplete="off"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        id="voiceButton"
+                        class="voice-button"
+                        aria-label="Speak your question"
+                        title="Speak your question"
+                    >
+                        <svg
+                            class="voice-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z"
+                            />
+                            <path
+                                d="M19 11a7 7 0 0 1-14 0"
+                            />
+                            <path
+                                d="M12 18v3"
+                            />
+                            <path
+                                d="M8 21h8"
+                            />
+                        </svg>
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="sendButton"
+                        class="send-button"
+                        aria-label="Send message"
+                        title="Send message"
+                    >
+                        <svg
+                            class="send-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M5 12h13"
+                            />
+                            <path
+                                d="m13 6 6 6-6 6"
+                            />
+                        </svg>
+                    </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+    
+<!-- Rename chat modal -->
+<div
+    id="renameChatModal"
+    class="chat-modal"
+    aria-hidden="true"
+>
+    <div
+        class="chat-modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="renameChatTitle"
+    >
+
+        <div class="chat-modal-header">
+            <div>
+                <span class="chat-modal-eyebrow">
+                    CHAT SETTINGS
+                </span>
+
+                <h2 id="renameChatTitle">
+                    Rename chat
+                </h2>
+            </div>
+
+            <button
+                type="button"
+                id="renameChatClose"
+                class="chat-modal-close"
+                aria-label="Close"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 6l12 12"></path>
+                    <path d="M18 6L6 18"></path>
+                </svg>
+            </button>
+        </div>
+
+        <form id="renameChatForm">
+
+            <label
+                for="renameChatInput"
+                class="chat-modal-label"
+            >
+                Chat name
+            </label>
+
+            <input
+                type="text"
+                id="renameChatInput"
+                class="chat-modal-input"
+                maxlength="60"
+                autocomplete="off"
+                placeholder="Enter a chat name"
+            >
+
+            <div class="chat-modal-actions">
+
+                <button
+                    type="button"
+                    id="renameChatCancel"
+                    class="chat-modal-cancel"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="chat-modal-save"
+                >
+                    Save
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<script src="/js/chat.js"></script>
+
+<script src="/js/profile.js"></script>
+    <script src="/js/mobile.js"></script>
+</body>
+</html>

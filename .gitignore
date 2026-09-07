@@ -1,0 +1,39 @@
+# Environment
+.env
+.env.*
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.so
+
+# Local database
+data/*.db
+data/*.db-*
+data/*.sqlite
+data/*.sqlite3
+
+# Local uploaded documents
+data/uploads/
+
+# Local vector database
+data/chroma/
+
+# Backups
+*.backup
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Deployment / temporary files
+.vercel/
+*.log
+
+# Local deployment/archive files
+ai-study-assistant-source.zip
+cloudflared.deb

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Quizzes - AI STUDY ASSISTANT</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/mobile.css">
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">AI</div>
+            <span>AI STUDY ASSISTANT</span>
+        </div>
+
+        <nav>
+
+            <a href="/app" class="nav-item">
+                <span>⌂</span>
+                Dashboard
+            </a>
+
+            <a href="/chat.html" class="nav-item">
+                <span>◉</span>
+                AI Chat
+            </a>
+
+            <a href="/quiz.html" class="nav-item active">
+                <span>?</span>
+                Quizzes
+            </a>
+
+            <a href="/progress.html" class="nav-item">
+                <span>↗</span>
+                Progress
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                System Online
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>AI Quiz Generator</h1>
+
+                <p>
+                    Test your knowledge using your study materials.
+                </p>
+
+            </div>
+
+            <div class="profile">
+                <div class="avatar" id="userAvatar">G</div>
+            </div>
+
+        </header>
+
+
+        <section class="welcome-card">
+
+            <div>
+
+                <span class="eyebrow">
+                    AI POWERED QUIZZES
+                </span>
+
+                <h2>
+                    Learn.<br>
+                    Practice.<br>
+                    Improve.
+                </h2>
+
+                <p>
+                    Choose a study document and let AI generate
+                    a personalized multiple-choice quiz.
+                </p>
+
+            </div>
+
+            <div class="welcome-icon">
+                🧠
+            </div>
+
+        </section>
+
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Create a Quiz
+                    </h2>
+
+                    <p>
+                        Select your study material and choose how many questions
+                        you want.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="feature-card quiz-generator-card">
+
+                <label for="documentSelect">
+                    Study Material
+                </label>
+
+                <select id="documentSelect">
+
+                    <option value="">
+                        Loading documents...
+                    </option>
+
+                </select>
+
+
+                <label for="questionCount">
+                    Number of Questions
+                </label>
+
+                <select id="questionCount">
+
+                    <option value="5">5 Questions</option>
+                    <option value="10">10 Questions</option>
+                    <option value="15">15 Questions</option>
+                    <option value="20">20 Questions</option>
+
+                </select>
+
+
+                <button
+                    id="generateQuizButton"
+                    class="primary-button"
+                    disabled
+                >
+                    Generate Quiz
+                </button>
+
+                <p id="quizStatus"></p>
+
+            </div>
+
+        </section>
+
+
+        <section
+            id="quizSection"
+            class="section"
+            style="display: none;"
+        >
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        GENERATED QUIZ
+                    </span>
+
+                    <h2 id="quizTitle">
+                        Your Quiz
+                    </h2>
+
+                    <p id="quizSubtitle"></p>
+
+                </div>
+
+            </div>
+
+
+            <div id="quizContainer"></div>
+
+
+            <div
+                id="quizResult"
+                class="feature-card"
+                style="display: none;"
+            >
+
+                <h2 id="scoreText"></h2>
+
+                <p id="scoreMessage"></p>
+
+                <button
+                    id="retryButton"
+                    class="primary-button"
+                >
+                    Try Again
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="/js/quiz.js"></script>
+
+<script src="/js/profile.js"></script>
+    <script src="/js/mobile.js"></script>
+</body>
+
+</html>
+

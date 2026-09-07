@@ -1,0 +1,2290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin | AI STUDY ASSISTANT</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/mobile.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #080b14;
+            --panel: rgba(255,255,255,.045);
+            --panel-hover: rgba(255,255,255,.065);
+            --border: rgba(255,255,255,.08);
+            --text: #f5f7ff;
+            --muted: #858da5;
+            --muted-2: #626a80;
+            --primary: #6366f1;
+            --cyan: #22d3ee;
+            --danger: #f87171;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 15% 10%, rgba(99,102,241,.16), transparent 30%),
+                radial-gradient(circle at 90% 15%, rgba(34,211,238,.10), transparent 28%),
+                var(--bg);
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        .admin-layout {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .admin-sidebar {
+            width: 250px;
+            position: fixed;
+            inset: 0 auto 0 0;
+            padding: 25px 16px;
+            background: rgba(8,11,20,.78);
+            border-right: 1px solid var(--border);
+            backdrop-filter: blur(22px);
+            z-index: 20;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 10px 30px;
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--primary), var(--cyan));
+            box-shadow: 0 10px 35px rgba(99,102,241,.25);
+            font-weight: 900;
+        }
+
+        .brand strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .brand span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .sidebar-label {
+            margin: 18px 12px 9px;
+            color: var(--muted-2);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .15em;
+        }
+
+        .nav-item {
+            width: 100%;
+            border: 0;
+            background: transparent;
+            color: #9ba3b8;
+            padding: 12px;
+            margin-bottom: 4px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            text-align: left;
+            transition: .2s ease;
+        }
+
+        .nav-item:hover {
+            color: white;
+            background: rgba(255,255,255,.055);
+        }
+
+        .nav-item.active {
+            color: white;
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(99,102,241,.20),
+                    rgba(34,211,238,.07)
+                );
+            box-shadow: inset 2px 0 0 var(--primary);
+        }
+
+        .nav-icon {
+            width: 24px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .sidebar-bottom {
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: 20px;
+        }
+
+        .back-btn {
+            border: 1px solid var(--border);
+        }
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        .admin-main {
+            width: calc(100% - 250px);
+            margin-left: 250px;
+            padding: 30px 38px 60px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .eyebrow {
+            color: #7c84a0;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .16em;
+        }
+
+        .page-title {
+            margin: 7px 0 4px;
+            font-size: 31px;
+            letter-spacing: -.035em;
+        }
+
+        .subtitle {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 8px 13px 8px 8px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: rgba(255,255,255,.035);
+        }
+
+        .admin-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--primary), var(--cyan));
+            font-weight: 800;
+        }
+
+        .admin-user strong {
+            display: block;
+            font-size: 13px;
+        }
+
+        .admin-user span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        /* =========================================================
+           VIEWS
+        ========================================================= */
+
+        .view {
+            display: none;
+            animation: viewIn .28s ease;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes viewIn {
+            from {
+                opacity: 0;
+                transform: translateY(7px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .view-heading {
+            margin-bottom: 22px;
+        }
+
+        .view-heading h2 {
+            margin: 0 0 5px;
+            font-size: 23px;
+        }
+
+        .view-heading p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* =========================================================
+           CARDS
+        ========================================================= */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+            min-height: 135px;
+            padding: 21px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--panel);
+        }
+
+        .stat-card::after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            right: -40px;
+            bottom: -45px;
+            border-radius: 50%;
+            background: rgba(99,102,241,.12);
+            filter: blur(12px);
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .stat-value {
+            margin-top: 12px;
+            font-size: 29px;
+            font-weight: 800;
+            letter-spacing: -.04em;
+        }
+
+        .stat-icon {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            font-size: 21px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1.2fr .8fr;
+            gap: 18px;
+        }
+
+        .grid-2-equal {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 18px;
+        }
+
+        .panel {
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--panel);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 19px 21px;
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+
+        .panel-header h3 {
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .panel-header span {
+            color: var(--muted-2);
+            font-size: 11px;
+        }
+
+        .panel-body {
+            padding: 8px 0;
+        }
+
+        .empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* =========================================================
+           ROWS
+        ========================================================= */
+
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 14px 21px;
+            border-bottom: 1px solid rgba(255,255,255,.045);
+        }
+
+        .row:last-child {
+            border-bottom: 0;
+        }
+
+        .row:hover {
+            background: rgba(255,255,255,.025);
+        }
+
+        .row-icon {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            background: rgba(99,102,241,.12);
+        }
+
+        .row-info {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .row-title {
+            font-size: 13px;
+            font-weight: 650;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .row-meta {
+            margin-top: 4px;
+            color: var(--muted-2);
+            font-size: 11px;
+        }
+
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
+
+        .btn {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 9px 13px;
+            color: white;
+            background: rgba(255,255,255,.045);
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .btn:hover {
+            background: rgba(255,255,255,.08);
+        }
+
+        .btn-primary {
+            border: 0;
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+        }
+
+        .btn-danger {
+            color: var(--danger);
+            background: rgba(248,113,113,.07);
+        }
+
+        .btn-danger:hover {
+            background: rgba(248,113,113,.14);
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .search {
+            flex: 1;
+            min-width: 180px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            outline: none;
+            padding: 11px 13px;
+            color: white;
+            background: rgba(255,255,255,.035);
+        }
+
+        .search:focus {
+            border-color: rgba(99,102,241,.55);
+        }
+
+        /* =========================================================
+           TABLE
+        ========================================================= */
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255,255,255,.045);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        th {
+            color: var(--muted-2);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        td {
+            color: #dce0ee;
+            font-size: 12px;
+        }
+
+        tr:hover td {
+            background: rgba(255,255,255,.018);
+        }
+
+        .badge {
+            display: inline-flex;
+            padding: 5px 8px;
+            border-radius: 20px;
+            background: rgba(99,102,241,.12);
+            color: #b7b9ff;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .score {
+            font-weight: 800;
+        }
+
+        /* =========================================================
+           PROGRESS
+        ========================================================= */
+
+        .topic-row {
+            padding: 14px 21px;
+        }
+
+        .topic-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .topic-score {
+            color: #a6a9ff;
+            font-weight: 800;
+        }
+
+        .progress-track {
+            height: 6px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: rgba(255,255,255,.07);
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--primary), var(--cyan));
+        }
+
+        /* =========================================================
+           ANALYTICS
+        ========================================================= */
+
+        .analytics-stat {
+            padding: 21px;
+        }
+
+        .analytics-stat label {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .analytics-stat strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 25px;
+        }
+
+        .chart-list {
+            padding: 10px 21px 20px;
+        }
+
+        .chart-item {
+            margin: 17px 0;
+        }
+
+        .chart-item-head {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 7px;
+            font-size: 12px;
+        }
+
+        /* =========================================================
+           STUDENT DETAIL
+        ========================================================= */
+
+        .student-detail {
+            display: none;
+        }
+
+        .student-detail.active {
+            display: block;
+        }
+
+        .student-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .large-avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 17px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--primary), var(--cyan));
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .student-profile h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .student-profile p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1050px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0,1fr));
+            }
+
+            .grid-2,
+            .grid-2-equal {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 750px) {
+            .admin-sidebar {
+                width: 70px;
+                padding: 20px 9px;
+            }
+
+            .brand {
+                justify-content: center;
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .brand-text,
+            .sidebar-label,
+            .nav-item span:not(.nav-icon) {
+                display: none;
+            }
+
+            .nav-item {
+                justify-content: center;
+            }
+
+            .admin-main {
+                width: calc(100% - 70px);
+                margin-left: 70px;
+                padding: 22px 17px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .admin-user {
+                padding: 7px;
+            }
+
+            .admin-user div:not(.admin-avatar) {
+                display: none;
+            }
+
+            .page-title {
+                font-size: 25px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .toolbar {
+                flex-wrap: wrap;
+            }
+
+            .search {
+                width: 100%;
+                flex-basis: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- =========================================================
+         SIDEBAR
+    ========================================================== -->
+
+    <aside class="admin-sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">AI</div>
+
+            <div class="brand-text">
+                <strong>AI STUDY ASSISTANT</strong>
+                <span>Administration</span>
+            </div>
+        </div>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <button class="nav-item active" data-view="dashboard">
+            <span class="nav-icon">⌂</span>
+            <span>Dashboard</span>
+        </button>
+
+        <button class="nav-item" data-view="documents">
+            <span class="nav-icon">▣</span>
+            <span>Documents</span>
+        </button>
+
+        <button class="nav-item" data-view="students">
+            <span class="nav-icon">♙</span>
+            <span>Students</span>
+        </button>
+
+        <button class="nav-item" data-view="analytics">
+            <span class="nav-icon">◒</span>
+            <span>Analytics</span>
+        </button>
+
+        <div class="sidebar-bottom">
+
+            <button
+                class="nav-item back-btn"
+                onclick="window.location.href='/app'"
+            >
+                <span class="nav-icon">←</span>
+                <span>Student Dashboard</span>
+            </button>
+
+            <button
+                class="nav-item"
+                onclick="logout()"
+            >
+                <span class="nav-icon">↪</span>
+                <span>Logout</span>
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================== -->
+
+    <main class="admin-main">
+
+        <header class="topbar">
+
+            <div>
+                <div class="eyebrow">ADMIN CONTROL CENTER</div>
+
+                <h1 class="page-title" id="pageTitle">
+                    Dashboard
+                </h1>
+
+                <p class="subtitle" id="pageSubtitle">
+                    Overview of your AI STUDY ASSISTANT.
+                </p>
+            </div>
+
+            <div class="admin-user">
+
+                <div class="admin-avatar" id="adminAvatar">
+                    A
+                </div>
+
+                <div>
+                    <strong id="adminName">Administrator</strong>
+                    <span>Administrator</span>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+             DASHBOARD VIEW
+        ====================================================== -->
+
+        <section class="view active" id="view-dashboard">
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon">♙</div>
+                    <div class="stat-label">Students</div>
+                    <div class="stat-value" id="statStudents">0</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">▣</div>
+                    <div class="stat-label">Documents</div>
+                    <div class="stat-value" id="statDocuments">0</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">✓</div>
+                    <div class="stat-label">Quiz Attempts</div>
+                    <div class="stat-value" id="statQuizzes">0</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">◒</div>
+                    <div class="stat-label">Average Score</div>
+                    <div class="stat-value" id="statAverage">0%</div>
+                </div>
+
+            </div>
+
+
+            <div class="grid-2">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <h3>Recent Quiz Activity</h3>
+                        <span>Latest attempts</span>
+                    </div>
+
+                    <div class="panel-body" id="recentQuizzes">
+                        <div class="empty">Loading...</div>
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <h3>Recent Documents</h3>
+                        <span>Latest uploads</span>
+                    </div>
+
+                    <div class="panel-body" id="recentDocuments">
+                        <div class="empty">Loading...</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DOCUMENTS VIEW
+        ====================================================== -->
+
+        <section class="view" id="view-documents">
+
+            <div class="view-heading">
+                <h2>Document Management</h2>
+                <p>Manage the study materials available to the AI assistant.</p>
+            </div>
+
+            <div class="toolbar">
+
+                <input
+                    id="documentSearch"
+                    class="search"
+                    type="search"
+                    placeholder="Search documents..."
+                >
+
+                <button
+                    class="btn btn-primary"
+                    onclick="document.getElementById('documentUpload').click()"
+                >
+                    + Upload Document
+                </button>
+
+                <input
+                    id="documentUpload"
+                    type="file"
+                    accept=".pdf"
+                    hidden
+                >
+
+            </div>
+
+            <div class="panel">
+
+                <div class="panel-header">
+                    <h3>All Documents</h3>
+                    <span id="documentCount">0 documents</span>
+                </div>
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Document</th>
+                                <th>Chunks</th>
+                                <th>Uploaded</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="documentsTable">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             STUDENTS VIEW
+        ====================================================== -->
+
+        <section class="view" id="view-students">
+
+            <div id="studentListView">
+
+                <div class="view-heading">
+                    <h2>Student Management</h2>
+                    <p>Monitor registered students and their learning activity.</p>
+                </div>
+
+                <div class="toolbar">
+
+                    <input
+                        id="studentSearch"
+                        class="search"
+                        type="search"
+                        placeholder="Search students..."
+                    >
+
+                </div>
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <h3>Registered Students</h3>
+                        <span id="studentCount">0 students</span>
+                    </div>
+
+                    <div class="table-wrap">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Quiz Attempts</th>
+                                    <th>Average Score</th>
+                                    <th>Last Quiz</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="studentsTable">
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="student-detail"
+                id="studentDetailView"
+            >
+
+                <div class="view-heading">
+
+                    <button
+                        class="btn"
+                        onclick="closeStudentDetails()"
+                    >
+                        ← Back to Students
+                    </button>
+
+                </div>
+
+                <div class="panel">
+
+                    <div
+                        class="student-profile"
+                        id="studentProfile"
+                    >
+                    </div>
+
+                </div>
+
+                <br>
+
+                <div class="grid-2-equal">
+
+                    <div class="panel">
+
+                        <div class="panel-header">
+                            <h3>Quiz History</h3>
+                            <span>Student attempts</span>
+                        </div>
+
+                        <div class="table-wrap">
+
+                            <table>
+
+                                <thead>
+                                    <tr>
+                                        <th>Document</th>
+                                        <th>Score</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="studentQuizTable">
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="panel">
+
+                        <div class="panel-header">
+                            <h3>Topic Performance</h3>
+                            <span>Weakest first</span>
+                        </div>
+
+                        <div id="studentTopics">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ANALYTICS VIEW
+        ====================================================== -->
+
+        <section class="view" id="view-analytics">
+
+            <div class="view-heading">
+                <h2>Learning Analytics</h2>
+                <p>Understand how students are performing across the platform.</p>
+            </div>
+
+
+            <div class="grid-2-equal">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <h3>Topic Performance</h3>
+                        <span>Lowest first</span>
+                    </div>
+
+                    <div id="analyticsTopics">
+                        <div class="empty">Loading...</div>
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <h3>Student Activity</h3>
+                        <span>Quiz participation</span>
+                    </div>
+
+                    <div id="studentActivity">
+                        <div class="empty">Loading...</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <br>
+
+            <div class="grid-2-equal">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <h3>Document Performance</h3>
+                        <span>Quiz usage</span>
+                    </div>
+
+                    <div class="table-wrap">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Document</th>
+                                    <th>Attempts</th>
+                                    <th>Average</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="analyticsDocuments">
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <h3>Quiz Trend</h3>
+                        <span>Daily activity</span>
+                    </div>
+
+                    <div
+                        class="chart-list"
+                        id="quizTrend"
+                    >
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    let currentView = "dashboard";
+    let allDocuments = [];
+    let allStudents = [];
+
+
+    /* ============================================================
+       HELPERS
+    ============================================================ */
+
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+
+    function initials(name) {
+        return String(name || "A")
+            .split(" ")
+            .map(part => part[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase();
+    }
+
+
+    function formatDate(value) {
+        if (!value) return "Never";
+
+        const date = new Date(
+            String(value).replace(" ", "T")
+        );
+
+        if (Number.isNaN(date.getTime())) {
+            return value;
+        }
+
+        return date.toLocaleDateString(
+            undefined,
+            {
+                year: "numeric",
+                month: "short",
+                day: "numeric"
+            }
+        );
+    }
+
+
+    function scoreClass(score) {
+        if (score >= 80) return "score";
+        return "score";
+    }
+
+
+    /* ============================================================
+       NAVIGATION
+    ============================================================ */
+
+    const viewInfo = {
+
+        dashboard: {
+            title: "Dashboard",
+            subtitle: "Overview of your AI STUDY ASSISTANT."
+        },
+
+        documents: {
+            title: "Documents",
+            subtitle: "Manage study materials and indexed knowledge."
+        },
+
+        students: {
+            title: "Students",
+            subtitle: "Monitor students and their learning activity."
+        },
+
+        analytics: {
+            title: "Analytics",
+            subtitle: "Understand learning performance across the platform."
+        }
+
+    };
+
+
+    function switchView(view) {
+
+        currentView = view;
+
+        document.querySelectorAll(".nav-item[data-view]")
+            .forEach(button => {
+                button.classList.toggle(
+                    "active",
+                    button.dataset.view === view
+                );
+            });
+
+        document.querySelectorAll(".view")
+            .forEach(section => {
+                section.classList.toggle(
+                    "active",
+                    section.id === `view-${view}`
+                );
+            });
+
+        document.getElementById("pageTitle").textContent =
+            viewInfo[view].title;
+
+        document.getElementById("pageSubtitle").textContent =
+            viewInfo[view].subtitle;
+
+
+        if (view === "dashboard") {
+            loadDashboard();
+        }
+
+        if (view === "documents") {
+            loadDocuments();
+        }
+
+        if (view === "students") {
+            loadStudents();
+        }
+
+        if (view === "analytics") {
+            loadAnalytics();
+        }
+    }
+
+
+    document.querySelectorAll(".nav-item[data-view]")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => switchView(button.dataset.view)
+            );
+
+        });
+
+
+    /* ============================================================
+       AUTH
+    ============================================================ */
+
+    async function loadAdmin() {
+
+        try {
+
+            const response = await fetch(
+                "/auth/me",
+                {
+                    credentials: "include"
+                }
+            );
+
+            if (!response.ok) {
+                window.location.href = "/login.html";
+                return;
+            }
+
+            const data = await response.json();
+
+            if (
+                !data.user ||
+                data.user.role !== "admin"
+            ) {
+                window.location.href = "/app";
+                return;
+            }
+
+            document.getElementById("adminName").textContent =
+                data.user.name;
+
+            document.getElementById("adminAvatar").textContent =
+                initials(data.user.name);
+
+        } catch (error) {
+
+            console.error(error);
+            window.location.href = "/login.html";
+
+        }
+    }
+
+
+    async function logout() {
+
+        try {
+            await fetch(
+                "/auth/logout",
+                {
+                    method: "POST",
+                    credentials: "include"
+                }
+            );
+        } finally {
+            window.location.href = "/login.html";
+        }
+    }
+
+
+    /* ============================================================
+       DASHBOARD
+    ============================================================ */
+
+    async function loadDashboard() {
+
+        try {
+
+            const response = await fetch(
+                "/admin/dashboard",
+                {
+                    credentials: "include"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Dashboard request failed");
+            }
+
+            const data = await response.json();
+
+            const overview = data.overview;
+
+            document.getElementById("statStudents").textContent =
+                overview.students;
+
+            document.getElementById("statDocuments").textContent =
+                overview.documents;
+
+            document.getElementById("statQuizzes").textContent =
+                overview.quiz_attempts;
+
+            document.getElementById("statAverage").textContent =
+                `${overview.average_score}%`;
+
+
+            const quizContainer =
+                document.getElementById("recentQuizzes");
+
+            if (!data.recent_quizzes.length) {
+
+                quizContainer.innerHTML =
+                    `<div class="empty">No quiz activity yet.</div>`;
+
+            } else {
+
+                quizContainer.innerHTML =
+                    data.recent_quizzes.map(quiz => `
+
+                        <div class="row">
+
+                            <div class="row-icon">✓</div>
+
+                            <div class="row-info">
+
+                                <div class="row-title">
+                                    ${escapeHtml(quiz.student_name)}
+                                </div>
+
+                                <div class="row-meta">
+                                    ${escapeHtml(quiz.filename)}
+                                    ·
+                                    ${formatDate(quiz.created_at)}
+                                </div>
+
+                            </div>
+
+                            <span class="badge">
+                                ${quiz.percentage}%
+                            </span>
+
+                        </div>
+
+                    `).join("");
+
+            }
+
+
+            const documentContainer =
+                document.getElementById("recentDocuments");
+
+            if (!data.recent_documents.length) {
+
+                documentContainer.innerHTML =
+                    `<div class="empty">No documents uploaded.</div>`;
+
+            } else {
+
+                documentContainer.innerHTML =
+                    data.recent_documents.map(doc => `
+
+                        <div class="row">
+
+                            <div class="row-icon">▣</div>
+
+                            <div class="row-info">
+
+                                <div class="row-title">
+                                    ${escapeHtml(doc.filename)}
+                                </div>
+
+                                <div class="row-meta">
+                                    ${doc.chunk_count} chunks
+                                    ·
+                                    ${formatDate(doc.created_at)}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    `).join("");
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
+    }
+
+
+    /* ============================================================
+       DOCUMENTS
+    ============================================================ */
+
+    async function loadDocuments() {
+
+        try {
+
+            const response = await fetch(
+                "/admin/documents",
+                {
+                    credentials: "include"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Documents request failed");
+            }
+
+            const data = await response.json();
+
+            allDocuments = data.documents || [];
+
+            renderDocuments(allDocuments);
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById("documentsTable").innerHTML =
+                `
+                <tr>
+                    <td colspan="4">
+                        <div class="empty">
+                            Failed to load documents.
+                        </div>
+                    </td>
+                </tr>
+                `;
+
+        }
+
+    }
+
+
+    function renderDocuments(documents) {
+
+        document.getElementById("documentCount").textContent =
+            `${documents.length} document${documents.length === 1 ? "" : "s"}`;
+
+
+        const table =
+            document.getElementById("documentsTable");
+
+
+        if (!documents.length) {
+
+            table.innerHTML =
+                `
+                <tr>
+                    <td colspan="4">
+                        <div class="empty">
+                            No documents found.
+                        </div>
+                    </td>
+                </tr>
+                `;
+
+            return;
+        }
+
+
+        table.innerHTML =
+            documents.map(doc => `
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            ${escapeHtml(doc.filename)}
+                        </strong>
+                    </td>
+
+                    <td>
+                        <span class="badge">
+                            ${doc.chunk_count}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${formatDate(doc.created_at)}
+                    </td>
+
+                    <td>
+                        <button
+                            class="btn btn-danger"
+                            onclick="deleteDocument('${doc.id}')"
+                        >
+                            Delete
+                        </button>
+                    </td>
+
+                </tr>
+
+            `).join("");
+
+    }
+
+
+    document
+        .getElementById("documentSearch")
+        .addEventListener("input", event => {
+
+            const query =
+                event.target.value.toLowerCase().trim();
+
+            renderDocuments(
+                allDocuments.filter(doc =>
+                    doc.filename
+                        .toLowerCase()
+                        .includes(query)
+                )
+            );
+
+        });
+
+
+    async function deleteDocument(id) {
+
+        const document =
+            allDocuments.find(doc => doc.id === id);
+
+        if (!document) return;
+
+
+        const confirmed = confirm(
+            `Delete "${document.filename}"?\n\nThis will remove the document from the study system.`
+        );
+
+        if (!confirmed) return;
+
+
+        try {
+
+            const response = await fetch(
+                `/documents/${encodeURIComponent(id)}`,
+                {
+                    method: "DELETE",
+                    credentials: "include"
+                }
+            );
+
+            const data = await response.json();
+
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail || "Delete failed"
+                );
+            }
+
+
+            await loadDocuments();
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                error.message ||
+                "Failed to delete document."
+            );
+
+        }
+
+    }
+
+
+    document
+        .getElementById("documentUpload")
+        .addEventListener("change", async event => {
+
+            const file = event.target.files[0];
+
+            if (!file) return;
+
+
+            const formData = new FormData();
+
+            formData.append("file", file);
+
+
+            try {
+
+                const response = await fetch(
+                    "/documents/upload",
+                    {
+                        method: "POST",
+                        credentials: "include",
+                        body: formData
+                    }
+                );
+
+                const data = await response.json();
+
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail || "Upload failed"
+                    );
+                }
+
+
+                event.target.value = "";
+
+                await loadDocuments();
+
+                alert("Document uploaded successfully.");
+
+            } catch (error) {
+
+                console.error(error);
+
+                event.target.value = "";
+
+                alert(
+                    error.message ||
+                    "Failed to upload document."
+                );
+
+            }
+
+        });
+
+
+    /* ============================================================
+       STUDENTS
+    ============================================================ */
+
+    async function loadStudents() {
+
+        try {
+
+            const response = await fetch(
+                "/admin/students",
+                {
+                    credentials: "include"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Students request failed");
+            }
+
+            const data = await response.json();
+
+            allStudents = data.students || [];
+
+            renderStudents(allStudents);
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
+    }
+
+
+    function renderStudents(students) {
+
+        document.getElementById("studentCount").textContent =
+            `${students.length} student${students.length === 1 ? "" : "s"}`;
+
+
+        const table =
+            document.getElementById("studentsTable");
+
+
+        if (!students.length) {
+
+            table.innerHTML =
+                `
+                <tr>
+                    <td colspan="5">
+                        <div class="empty">
+                            No students found.
+                        </div>
+                    </td>
+                </tr>
+                `;
+
+            return;
+        }
+
+
+        table.innerHTML =
+            students.map(student => `
+
+                <tr>
+
+                    <td>
+
+                        <div style="
+                            display:flex;
+                            align-items:center;
+                            gap:10px;
+                        ">
+
+                            <div class="row-icon">
+                                ${initials(student.name)}
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    ${escapeHtml(student.name)}
+                                </strong>
+
+                                <div class="row-meta">
+                                    ${escapeHtml(student.email)}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+                    <td>
+                        ${student.quiz_attempts}
+                    </td>
+
+                    <td>
+                        <span class="badge">
+                            ${student.average_score}%
+                        </span>
+                    </td>
+
+                    <td>
+                        ${formatDate(student.last_quiz)}
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="btn"
+                            onclick="openStudentDetails(${student.id})"
+                        >
+                            View
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `).join("");
+
+    }
+
+
+    document
+        .getElementById("studentSearch")
+        .addEventListener("input", event => {
+
+            const query =
+                event.target.value.toLowerCase().trim();
+
+            renderStudents(
+                allStudents.filter(student =>
+                    student.name
+                        .toLowerCase()
+                        .includes(query) ||
+                    student.email
+                        .toLowerCase()
+                        .includes(query)
+                )
+            );
+
+        });
+
+
+    async function openStudentDetails(id) {
+
+        try {
+
+            const response = await fetch(
+                `/admin/students/${id}`,
+                {
+                    credentials: "include"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Student details failed");
+            }
+
+            const data = await response.json();
+
+            const student = data.student;
+
+
+            document.getElementById("studentProfile").innerHTML = `
+
+                <div class="large-avatar">
+                    ${initials(student.name)}
+                </div>
+
+                <div>
+
+                    <h3>
+                        ${escapeHtml(student.name)}
+                    </h3>
+
+                    <p>
+                        ${escapeHtml(student.email)}
+                        ·
+                        Joined ${formatDate(student.created_at)}
+                    </p>
+
+                </div>
+
+            `;
+
+
+            const quizTable =
+                document.getElementById("studentQuizTable");
+
+
+            if (!data.quiz_attempts.length) {
+
+                quizTable.innerHTML =
+                    `
+                    <tr>
+                        <td colspan="3">
+                            <div class="empty">
+                                No quiz attempts yet.
+                            </div>
+                        </td>
+                    </tr>
+                    `;
+
+            } else {
+
+                quizTable.innerHTML =
+                    data.quiz_attempts.map(attempt => `
+
+                        <tr>
+
+                            <td>
+                                ${escapeHtml(attempt.filename)}
+                            </td>
+
+                            <td>
+                                <span class="badge">
+                                    ${attempt.percentage}%
+                                </span>
+                            </td>
+
+                            <td>
+                                ${formatDate(attempt.created_at)}
+                            </td>
+
+                        </tr>
+
+                    `).join("");
+
+            }
+
+
+            const topicContainer =
+                document.getElementById("studentTopics");
+
+
+            if (!data.topics.length) {
+
+                topicContainer.innerHTML =
+                    `<div class="empty">No topic data yet.</div>`;
+
+            } else {
+
+                topicContainer.innerHTML =
+                    data.topics.map(topic => `
+
+                        <div class="topic-row">
+
+                            <div class="topic-top">
+
+                                <span>
+                                    ${escapeHtml(topic.topic)}
+                                </span>
+
+                                <span class="topic-score">
+                                    ${topic.percentage}%
+                                </span>
+
+                            </div>
+
+                            <div class="progress-track">
+
+                                <div
+                                    class="progress-fill"
+                                    style="width:${Math.min(
+                                        100,
+                                        Math.max(0, topic.percentage)
+                                    )}%"
+                                ></div>
+
+                            </div>
+
+                        </div>
+
+                    `).join("");
+
+            }
+
+
+            document
+                .getElementById("studentListView")
+                .style.display = "none";
+
+            document
+                .getElementById("studentDetailView")
+                .classList.add("active");
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Failed to load student details."
+            );
+
+        }
+
+    }
+
+
+    function closeStudentDetails() {
+
+        document
+            .getElementById("studentDetailView")
+            .classList.remove("active");
+
+        document
+            .getElementById("studentListView")
+            .style.display = "block";
+
+    }
+
+
+    /* ============================================================
+       ANALYTICS
+    ============================================================ */
+
+    async function loadAnalytics() {
+
+        try {
+
+            const response = await fetch(
+                "/admin/analytics",
+                {
+                    credentials: "include"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Analytics request failed");
+            }
+
+            const data = await response.json();
+
+
+            /* TOPICS */
+
+            const topics =
+                document.getElementById("analyticsTopics");
+
+
+            if (!data.topics.length) {
+
+                topics.innerHTML =
+                    `<div class="empty">No topic data yet.</div>`;
+
+            } else {
+
+                topics.innerHTML =
+                    data.topics
+                        .slice(0, 10)
+                        .map(topic => `
+
+                            <div class="topic-row">
+
+                                <div class="topic-top">
+
+                                    <span>
+                                        ${escapeHtml(topic.topic)}
+                                    </span>
+
+                                    <span class="topic-score">
+                                        ${topic.percentage}%
+                                    </span>
+
+                                </div>
+
+                                <div class="progress-track">
+
+                                    <div
+                                        class="progress-fill"
+                                        style="width:${Math.min(
+                                            100,
+                                            Math.max(
+                                                0,
+                                                topic.percentage
+                                            )
+                                        )}%"
+                                    ></div>
+
+                                </div>
+
+                            </div>
+
+                        `).join("");
+
+            }
+
+
+            /* STUDENTS */
+
+            const students =
+                document.getElementById("studentActivity");
+
+
+            if (!data.student_activity.length) {
+
+                students.innerHTML =
+                    `<div class="empty">No student activity yet.</div>`;
+
+            } else {
+
+                students.innerHTML =
+                    data.student_activity.map(student => `
+
+                        <div class="row">
+
+                            <div class="row-icon">
+                                ${initials(student.name)}
+                            </div>
+
+                            <div class="row-info">
+
+                                <div class="row-title">
+                                    ${escapeHtml(student.name)}
+                                </div>
+
+                                <div class="row-meta">
+                                    ${student.quiz_attempts} quiz attempts
+                                </div>
+
+                            </div>
+
+                            <span class="badge">
+                                ${student.average_score}%
+                            </span>
+
+                        </div>
+
+                    `).join("");
+
+            }
+
+
+            /* DOCUMENTS */
+
+            const documents =
+                document.getElementById("analyticsDocuments");
+
+
+            documents.innerHTML =
+                data.documents.length
+
+                    ? data.documents.map(doc => `
+
+                        <tr>
+
+                            <td>
+                                ${escapeHtml(doc.filename)}
+                            </td>
+
+                            <td>
+                                ${doc.quiz_attempts}
+                            </td>
+
+                            <td>
+                                <span class="badge">
+                                    ${doc.average_score}%
+                                </span>
+                            </td>
+
+                        </tr>
+
+                    `).join("")
+
+                    : `
+                        <tr>
+                            <td colspan="3">
+                                <div class="empty">
+                                    No document analytics yet.
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+
+
+            /* DAILY TREND */
+
+            const trend =
+                document.getElementById("quizTrend");
+
+
+            if (!data.daily_activity.length) {
+
+                trend.innerHTML =
+                    `<div class="empty">No quiz trend data yet.</div>`;
+
+            } else {
+
+                const maxAttempts =
+                    Math.max(
+                        ...data.daily_activity.map(
+                            item => item.attempts
+                        ),
+                        1
+                    );
+
+
+                trend.innerHTML =
+                    data.daily_activity.map(item => `
+
+                        <div class="chart-item">
+
+                            <div class="chart-item-head">
+
+                                <span>
+                                    ${formatDate(item.date)}
+                                </span>
+
+                                <span>
+                                    ${item.attempts} attempts
+                                </span>
+
+                            </div>
+
+                            <div class="progress-track">
+
+                                <div
+                                    class="progress-fill"
+                                    style="width:${
+                                        item.attempts /
+                                        maxAttempts *
+                                        100
+                                    }%"
+                                ></div>
+
+                            </div>
+
+                        </div>
+
+                    `).join("");
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
+    }
+
+
+    /* ============================================================
+       START
+    ============================================================ */
+
+    loadAdmin();
+    loadDashboard();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create account | AI Study Assistant</title>
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+
+<div class="auth-wrapper">
+
+    <div class="logo">
+        Study<span>AI</span>
+    </div>
+
+    <div class="auth-card">
+        <h1>Create your account</h1>
+        <p class="subtitle">
+            Start learning with your personal AI study assistant.
+        </p>
+
+        <form id="registerForm">
+
+            <div class="form-group">
+                <label for="name">Full name</label>
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="Your name"
+                    required
+                    autocomplete="name"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="you@example.com"
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="At least 8 characters"
+                    required
+                    minlength="8"
+                    autocomplete="new-password"
+                >
+                <div class="password-hint">
+                    Use at least 8 characters.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm password</label>
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Enter your password again"
+                    required
+                    minlength="8"
+                    autocomplete="new-password"
+                >
+            </div>
+
+            <button type="submit" class="auth-button" id="registerButton">
+                Create account
+            </button>
+
+            <div id="message" class="message"></div>
+
+        </form>
+
+        <div class="auth-footer">
+            Already have an account?
+            <a href="/login.html">Log in</a>
+        </div>
+    </div>
+
+    <a href="/" class="back-home">← Back to AI Study Assistant</a>
+
+</div>
+
+<script>
+const form = document.getElementById("registerForm");
+const button = document.getElementById("registerButton");
+const message = document.getElementById("message");
+
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (password !== confirmPassword) {
+        message.className = "message error";
+        message.textContent = "Passwords do not match.";
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Creating account...";
+    message.className = "message";
+    message.textContent = "";
+
+    try {
+        const response = await fetch("/auth/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                password: password
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Registration failed.");
+        }
+
+        message.className = "message success";
+        message.textContent = "Account created. Opening your dashboard...";
+
+        setTimeout(() => {
+            window.location.href = "/app";
+        }, 500);
+
+    } catch (error) {
+        message.className = "message error";
+        message.textContent = error.message;
+        button.disabled = false;
+        button.textContent = "Create account";
+    }
+});
+</script>
+
+</body>
+</html>

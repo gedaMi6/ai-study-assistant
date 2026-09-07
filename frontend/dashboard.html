@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI STUDY ASSISTANT</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/mobile.css">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">AI</div>
+            <span>AI STUDY ASSISTANT</span>
+        </div>
+
+        <nav>
+
+            <a href="/app" class="nav-item active">
+                <span>⌂</span>
+                Dashboard
+            </a>
+
+            <a href="/chat.html" class="nav-item">
+                <span>◉</span>
+                AI Chat
+            </a>
+
+            <a href="/quiz.html" class="nav-item">
+                <span>?</span>
+                Quizzes
+            </a>
+
+            <a href="/progress.html" class="nav-item">
+                <span>↗</span>
+                Progress
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                System Online
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar dashboard-topbar">
+
+            <div>
+
+                <span class="eyebrow">
+                    AI STUDY ASSISTANT STUDY WORKSPACE
+                </span>
+
+                <h1>
+                    Good evening, <span id="userName">Student</span>
+                </h1>
+
+                <p>
+                    Let's make today's study session count.
+                </p>
+
+            </div>
+
+            <div class="profile">
+                <button class="profile-button" id="profileButton" type="button">
+                    <div class="avatar" id="userAvatar">S</div>
+                    <span class="profile-chevron">⌄</span>
+                </button>
+
+                <div class="profile-menu" id="profileMenu">
+                    <div class="profile-menu-header">
+                        <strong id="menuUserName">Student</strong>
+                        <span id="menuUserEmail">student@example.com</span>
+                    </div>
+
+                    <div class="profile-menu-divider"></div>
+
+                    <button class="profile-menu-item" id="profileUploadButton" type="button">
+                        <span>📷</span>
+                        Change profile picture
+                    </button>
+
+                    <input
+                        type="file"
+                        id="profileImageInput"
+                        accept="image/jpeg,image/png,image/webp"
+                        hidden
+                    >
+
+                    <button class="profile-menu-item" id="adminLoginButton" type="button">
+                        <span>⚙️</span>
+                        Switch to Admin
+                    </button>
+
+                    <div class="profile-menu-divider"></div>
+
+                    <button class="profile-menu-item logout-item" id="logoutButton" type="button">
+                        <span>↪</span>
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+        </header>
+
+
+        <!-- HERO -->
+
+        <section class="dashboard-hero">
+
+            <div class="dashboard-hero-content">
+
+                <span class="hero-label">
+                    YOUR PERSONAL AI STUDY ASSISTANT
+                </span>
+
+                <h2>
+                    Learn smarter.<br>
+                    Practice better.
+                </h2>
+
+                <p>
+                    Upload your lecture materials and let AI help you
+                    understand, practice, and improve.
+                </p>
+
+                <button
+                    class="primary-button dashboard-upload-button"
+                >
+                    Upload Study Material
+                </button>
+
+            </div>
+
+
+            <div class="dashboard-hero-visual">
+
+                <div class="ai-orb">
+
+                    <div class="orb-core">
+                        AI
+                    </div>
+
+                    <span class="orb-dot orb-dot-1"></span>
+                    <span class="orb-dot orb-dot-2"></span>
+                    <span class="orb-dot orb-dot-3"></span>
+
+                </div>
+
+                <div class="hero-floating-card hero-card-one">
+                    <span>✦</span>
+                    AI Powered
+                </div>
+
+                <div class="hero-floating-card hero-card-two">
+                    <span>✓</span>
+                    Study Smarter
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- OVERVIEW -->
+
+        <section class="section dashboard-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        AT A GLANCE
+                    </span>
+
+                    <h2>
+                        Study Overview
+                    </h2>
+
+                    <p>
+                        Your learning activity in one place.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-stats-grid">
+
+
+                <div class="dashboard-stat-card">
+
+                    <div class="dashboard-stat-icon">
+                        📚
+                    </div>
+
+                    <div>
+
+                        <span>
+                            DOCUMENTS
+                        </span>
+
+                        <strong id="documentCount">
+                            0
+                        </strong>
+
+                        <small>
+                            Study materials
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-stat-card">
+
+                    <div class="dashboard-stat-icon">
+                        📝
+                    </div>
+
+                    <div>
+
+                        <span>
+                            QUIZZES
+                        </span>
+
+                        <strong id="quizCount">
+                            0
+                        </strong>
+
+                        <small>
+                            Completed quizzes
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-stat-card">
+
+                    <div class="dashboard-stat-icon">
+                        🎯
+                    </div>
+
+                    <div>
+
+                        <span>
+                            QUESTIONS
+                        </span>
+
+                        <strong id="questionCount">
+                            0
+                        </strong>
+
+                        <small>
+                            Questions answered
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-stat-card">
+
+                    <div class="dashboard-stat-icon">
+                        📈
+                    </div>
+
+                    <div>
+
+                        <span>
+                            PERFORMANCE
+                        </span>
+
+                        <strong id="progressPercentage">
+                            0%
+                        </strong>
+
+                        <small>
+                            Average score
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- MATERIALS -->
+
+        <section class="section dashboard-section">
+
+            <div class="section-header dashboard-material-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        YOUR LIBRARY
+                    </span>
+
+                    <h2>
+                        Study Materials
+                    </h2>
+
+                    <p>
+                        Your uploaded documents, ready to study.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="documentsList"
+                class="dashboard-document-grid"
+            >
+
+                <div class="dashboard-loading-card">
+
+                    <div class="dashboard-loading-dot"></div>
+
+                    <p>
+                        Loading your study materials...
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SUMMARY -->
+
+        <section
+            id="summarySection"
+            class="section dashboard-summary-section"
+            style="display: none;"
+        >
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        AI GENERATED
+                    </span>
+
+                    <h2 id="summaryTitle">
+                        Document Summary
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="summaryContent"
+                class="dashboard-summary-card"
+            ></div>
+
+        </section>
+
+
+        <!-- QUICK ACTIONS -->
+
+        <section class="section dashboard-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        STUDY TOOLS
+                    </span>
+
+                    <h2>
+                        Continue Learning
+                    </h2>
+
+                    <p>
+                        Jump directly into the part of your study session
+                        you need.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-actions-grid">
+
+
+                <a
+                    href="/chat.html"
+                    class="dashboard-action-card"
+                >
+
+                    <div class="dashboard-action-icon">
+                        💬
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Ask AI
+                        </h3>
+
+                        <p>
+                            Ask questions about your study materials.
+                        </p>
+
+                        <span>
+                            Open AI Chat →
+                        </span>
+
+                    </div>
+
+                </a>
+
+
+                <a
+                    href="/quiz.html"
+                    class="dashboard-action-card"
+                >
+
+                    <div class="dashboard-action-icon">
+                        🧠
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Practice
+                        </h3>
+
+                        <p>
+                            Turn your materials into AI quizzes.
+                        </p>
+
+                        <span>
+                            Create Quiz →
+                        </span>
+
+                    </div>
+
+                </a>
+
+
+                <a
+                    href="/progress.html"
+                    class="dashboard-action-card"
+                >
+
+                    <div class="dashboard-action-icon">
+                        📊
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Track Progress
+                        </h3>
+
+                        <p>
+                            Find weak topics and improve your score.
+                        </p>
+
+                        <span>
+                            View Progress →
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- MARKDOWN SUPPORT -->
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+
+
+    <script src="/js/app.js"></script>
+
+<script id="dashboardUserScript">
+async function loadCurrentUser() {
+    try {
+        const response = await fetch("/auth/me", {
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            window.location.href = "/login.html";
+            return;
+        }
+
+        const data = await response.json();
+        const user = data.user;
+
+        const userName = document.getElementById("userName");
+        const userAvatar = document.getElementById("userAvatar");
+        const menuUserName = document.getElementById("menuUserName");
+        const menuUserEmail = document.getElementById("menuUserEmail");
+
+        if (userName && user.name) {
+            userName.textContent = user.name;
+        }
+
+        if (menuUserName && user.name) {
+            menuUserName.textContent = user.name;
+        }
+
+        if (menuUserEmail && user.email) {
+            menuUserEmail.textContent = user.email;
+        }
+
+        if (userAvatar) {
+            if (user.profile_image) {
+                userAvatar.classList.add("has-image");
+
+                userAvatar.innerHTML = `
+                    <img
+                        src="${user.profile_image}?t=${Date.now()}"
+                        alt="${user.name || "Profile"}"
+                    >
+                `;
+            } else if (user.name) {
+                userAvatar.classList.remove("has-image");
+                userAvatar.textContent =
+                    user.name.trim().charAt(0).toUpperCase();
+            }
+        }
+
+    } catch (error) {
+        console.error("Failed to load current user:", error);
+    }
+}
+
+
+const profileButton = document.getElementById("profileButton");
+const profileMenu = document.getElementById("profileMenu");
+
+if (profileButton && profileMenu) {
+    profileButton.addEventListener("click", function(event) {
+        event.stopPropagation();
+        profileMenu.classList.toggle("show");
+    });
+
+    document.addEventListener("click", function(event) {
+        if (!profileMenu.contains(event.target) &&
+            !profileButton.contains(event.target)) {
+            profileMenu.classList.remove("show");
+        }
+    });
+}
+
+
+const logoutButton = document.getElementById("logoutButton");
+
+if (logoutButton) {
+    logoutButton.addEventListener("click", async function() {
+        try {
+            const response = await fetch("/auth/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+
+            if (response.ok) {
+                window.location.href = "/login.html";
+            }
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    });
+}
+
+
+const adminLoginButton = document.getElementById("adminLoginButton");
+
+if (adminLoginButton) {
+    adminLoginButton.addEventListener("click", async function() {
+        try {
+            const response = await fetch("/auth/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+
+            if (response.ok) {
+                window.location.href = "/login.html";
+            } else {
+                console.error("Failed to logout current user.");
+            }
+
+        } catch (error) {
+            console.error("Admin login transition failed:", error);
+        }
+    });
+}
+
+
+const profileUploadButton =
+    document.getElementById("profileUploadButton");
+
+const profileImageInput =
+    document.getElementById("profileImageInput");
+
+if (profileUploadButton && profileImageInput) {
+
+    profileUploadButton.addEventListener("click", function() {
+        profileImageInput.click();
+    });
+
+    profileImageInput.addEventListener("change", async function() {
+
+        const file = this.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await fetch("/profile/image", {
+                method: "POST",
+                body: formData,
+                credentials: "include"
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.detail || "Failed to upload profile image.");
+                return;
+            }
+
+            window.location.reload();
+
+        } catch (error) {
+            console.error("Profile upload failed:", error);
+            alert("Failed to upload profile image.");
+        }
+    });
+}
+
+
+loadCurrentUser();
+</script>
+    <script src="/js/mobile.js"></script>
+</body>
+
+</html>

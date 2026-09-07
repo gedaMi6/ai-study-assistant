@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in | AI Study Assistant</title>
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+
+<div class="auth-wrapper">
+
+    <div class="logo">
+        Study<span>AI</span>
+    </div>
+
+    <div class="auth-card">
+        <h1>Welcome back</h1>
+        <p class="subtitle">
+            Log in to continue your study journey.
+        </p>
+
+        <form id="loginForm">
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="you@example.com"
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <button type="submit" class="auth-button" id="loginButton">
+                Log in
+            </button>
+
+            <div id="message" class="message"></div>
+
+            <div class="forgot-password">
+                <a href="/reset-password.html">Forgot password?</a>
+            </div>
+
+        </form>
+
+        <div class="auth-footer">
+            Don't have an account?
+            <a href="/register.html">Create one</a>
+        </div>
+    </div>
+
+    <a href="/" class="back-home">← Back to AI Study Assistant</a>
+
+</div>
+
+<script>
+const form = document.getElementById("loginForm");
+const button = document.getElementById("loginButton");
+const message = document.getElementById("message");
+
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    button.disabled = true;
+    button.textContent = "Logging in...";
+    message.className = "message";
+    message.textContent = "";
+
+    try {
+        const response = await fetch("/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Login failed.");
+        }
+
+        // Store the authenticated user's ID so chat sessions
+        // are kept separate when different accounts use the same browser.
+        localStorage.setItem(
+            "study_assistant_user_id",
+            String(data.user.id)
+        );
+
+        const previousSessionUser =
+            localStorage.getItem(
+                "study_assistant_session_user_id"
+            );
+
+        if (
+            previousSessionUser !==
+            String(data.user.id)
+        ) {
+            localStorage.removeItem(
+                "study_assistant_session_id"
+            );
+        }
+
+        localStorage.setItem(
+            "study_assistant_session_user_id",
+            String(data.user.id)
+        );
+
+        message.className = "message success";
+        message.textContent = "Login successful. Opening your dashboard...";
+
+        setTimeout(() => {
+            window.location.href =
+                data.user.role === "admin" ? "/admin" : "/app";
+        }, 500);
+
+    } catch (error) {
+        message.className = "message error";
+        message.textContent = error.message;
+        button.disabled = false;
+        button.textContent = "Log in";
+    }
+});
+</script>
+
+</body>
+</html>
