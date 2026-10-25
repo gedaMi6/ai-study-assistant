@@ -48,6 +48,15 @@ def list_notifications(request: Request):
         FROM notifications
         WHERE user_id = ?
           AND is_read = 0
+          AND (
+              reference_type IS NULL
+              OR reference_type != 'teacher_test'
+              OR EXISTS (
+                  SELECT 1
+                  FROM teacher_tests t
+                  WHERE t.id = notifications.reference_id
+              )
+          )
         ORDER BY created_at DESC, id DESC
         """,
         (user["id"],),
@@ -59,6 +68,15 @@ def list_notifications(request: Request):
         FROM notifications
         WHERE user_id = ?
           AND is_read = 0
+          AND (
+              reference_type IS NULL
+              OR reference_type != 'teacher_test'
+              OR EXISTS (
+                  SELECT 1
+                  FROM teacher_tests t
+                  WHERE t.id = notifications.reference_id
+              )
+          )
         """,
         (user["id"],),
     ).fetchone()
