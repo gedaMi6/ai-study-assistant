@@ -388,10 +388,25 @@ def release_score(
             )
 
         if submission["score_released"]:
+            notification_exists = connection.execute(
+                """
+                SELECT 1
+                FROM notifications
+                WHERE user_id = ?
+                  AND type = 'exam_result_released'
+                  AND reference_type = 'teacher_test'
+                  AND reference_id = ?
+                LIMIT 1
+                """,
+                (submission["student_id"], submission["test_id"])
+            ).fetchone() is not None
+
             return {
                 "status": "success",
                 "message": "Score has already been released.",
-                "already_released": True
+                "already_released": True,
+                "student_notified": notification_exists,
+                "notification_created": False
             }
 
         connection.execute(
@@ -419,8 +434,9 @@ def release_score(
             )
         ).fetchone()
 
+        notification_created = False
         if not existing_notification:
-            connection.execute(
+            notification_cursor = connection.execute(
                 """
                 INSERT OR IGNORE INTO notifications (
                     user_id,
@@ -446,6 +462,20 @@ def release_score(
                     submission["test_id"]
                 )
             )
+            notification_created = notification_cursor.rowcount > 0
+
+        notification_exists = connection.execute(
+            """
+            SELECT 1
+            FROM notifications
+            WHERE user_id = ?
+              AND type = 'exam_result_released'
+              AND reference_type = 'teacher_test'
+              AND reference_id = ?
+            LIMIT 1
+            """,
+            (submission["student_id"], submission["test_id"])
+        ).fetchone() is not None
 
         connection.commit()
 
@@ -453,7 +483,8 @@ def release_score(
             "status": "success",
             "message": "Score released successfully.",
             "already_released": False,
-            "student_notified": True
+            "student_notified": notification_exists,
+            "notification_created": notification_created
         }
 
     finally:

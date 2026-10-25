@@ -227,6 +227,7 @@ class TeacherExamScoreReleaseTests(unittest.TestCase):
         self.assertEqual(result["status"], "success")
         self.assertFalse(result["already_released"])
         self.assertTrue(result["student_notified"])
+        self.assertTrue(result["notification_created"])
         self.assertEqual(self.get_attempt()["score_released"], 1)
         self.assertEqual(self.notification_count(), 1)
 
@@ -250,6 +251,8 @@ class TeacherExamScoreReleaseTests(unittest.TestCase):
 
         self.assertFalse(first["already_released"])
         self.assertTrue(second["already_released"])
+        self.assertTrue(second["student_notified"])
+        self.assertFalse(second["notification_created"])
         self.assertEqual(self.get_attempt()["score_released"], 1)
         self.assertEqual(self.notification_count(), 1)
 
@@ -259,6 +262,8 @@ class TeacherExamScoreReleaseTests(unittest.TestCase):
         result = self.release()
 
         self.assertEqual(result["status"], "success")
+        self.assertTrue(result["student_notified"])
+        self.assertFalse(result["notification_created"])
         self.assertEqual(self.get_attempt()["score_released"], 1)
         self.assertEqual(self.notification_count(), 1)
 
