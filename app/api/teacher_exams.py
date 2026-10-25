@@ -978,6 +978,16 @@ def delete_exam(exam_id: str, request: Request):
             if table in existing_tables:
                 connection.execute(sql, parameters)
 
+        # Remove notifications linked to this exam before deleting it.
+        connection.execute(
+            """
+            DELETE FROM notifications
+            WHERE reference_type = 'teacher_test'
+              AND reference_id = ?
+            """,
+            (exam_id,),
+        )
+
         connection.execute(
             "DELETE FROM teacher_tests WHERE id = ? AND creator_id = ?",
             (exam_id, teacher["id"]),

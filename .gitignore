@@ -50,3 +50,10 @@ cloudflared.deb
 data/*.db*
 data/*.sqlite*
 data/profile_images/
+
+# Ignore timestamped and named local source backups
+*.bak-*
+*.bak_*
+
+# Local application database backups
+data/backups/
