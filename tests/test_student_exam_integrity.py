@@ -1,6 +1,7 @@
 import json
 import sqlite3
 import tempfile
+import threading
 import unittest
 from datetime import timedelta
 from pathlib import Path
@@ -529,6 +530,158 @@ class StudentExamIntegrityTests(unittest.TestCase):
                 (self.EXAM_ID, self.STUDENT_ID),
             ).fetchone()
         self.assertIsNone(session)
+
+
+    def test_concurrent_first_session_creation_reuses_one_session(self):
+        with self.connect() as conn:
+            exam = conn.execute(
+                """
+                SELECT id, duration_minutes, deadline_at
+                FROM teacher_tests
+                WHERE id = ?
+                """,
+                (self.EXAM_ID,),
+            ).fetchone()
+
+        barrier = threading.Barrier(2)
+        original_now = student_exams._now_exam_time
+
+        def synchronized_now():
+            # Force both requests past their initial session lookup
+            # before either request attempts its INSERT.
+            barrier.wait(timeout=5)
+            return original_now()
+
+        def create_session(_):
+            conn = self.connect()
+            try:
+                session = student_exams._ensure_exam_session(
+                    conn, exam, self.STUDENT_ID
+                )
+                return dict(session)
+            finally:
+                conn.close()
+
+        with patch.object(
+            student_exams,
+            "_now_exam_time",
+            side_effect=synchronized_now,
+        ):
+            with __import__("concurrent.futures", fromlist=["ThreadPoolExecutor"]).ThreadPoolExecutor(
+                max_workers=2
+            ) as pool:
+                results = list(pool.map(create_session, range(2)))
+
+        self.assertEqual(results[0]["started_at"], results[1]["started_at"])
+        self.assertEqual(results[0]["expires_at"], results[1]["expires_at"])
+        self.assertEqual(results[0]["answers_json"], results[1]["answers_json"])
+
+        with self.connect() as conn:
+            count = conn.execute(
+                """
+                SELECT COUNT(*)
+                FROM teacher_test_sessions
+                WHERE test_id = ? AND student_id = ?
+                """,
+                (self.EXAM_ID, self.STUDENT_ID),
+            ).fetchone()[0]
+
+        self.assertEqual(count, 1)
+
+    def test_active_session_autosave_saves_answer_snapshot(self):
+        before = self.session()
+        self.assertIsNone(before["submitted_at"])
+
+        result = student_exams.autosave_exam(
+            self.EXAM_ID,
+            student_exams.ExamAutosave(
+                answers={str(self.QUESTION_ID): 1}
+            ),
+            self.request,
+        )
+
+        self.assertEqual(result, {"status": "success", "saved": True})
+
+        after = self.session()
+        self.assertEqual(
+            json.loads(after["answers_json"]),
+            {str(self.QUESTION_ID): 1},
+        )
+        self.assertIsNone(after["submitted_at"])
+        self.assertIsNone(self.attempt())
+
+
+    def test_autosave_rejects_expired_session_without_changing_saved_answers(self):
+        saved_answers = {str(self.QUESTION_ID): 0}
+        expired_at = (
+            student_exams._now_exam_time() - timedelta(minutes=5)
+        ).isoformat()
+
+        with self.connect() as conn:
+            conn.execute(
+                """
+                UPDATE teacher_test_sessions
+                SET expires_at = ?, submitted_at = NULL, answers_json = ?
+                WHERE test_id = ? AND student_id = ?
+                """,
+                (
+                    expired_at,
+                    json.dumps(saved_answers),
+                    self.EXAM_ID,
+                    self.STUDENT_ID,
+                ),
+            )
+
+        with self.assertRaises(HTTPException) as caught:
+            student_exams.autosave_exam(
+                self.EXAM_ID,
+                student_exams.ExamAutosave(
+                    answers={str(self.QUESTION_ID): 1}
+                ),
+                self.request,
+            )
+
+        self.assertEqual(caught.exception.status_code, 409)
+        self.assertEqual(
+            json.loads(self.session()["answers_json"]),
+            saved_answers,
+        )
+        self.assertIsNone(self.session()["submitted_at"])
+        self.assertIsNone(self.attempt())
+
+
+    def test_autosave_rejects_finalized_session_without_attempt(self):
+        with self.connect() as conn:
+            conn.execute(
+                """
+                UPDATE teacher_test_sessions
+                SET submitted_at = ?, answers_json = ?
+                WHERE test_id = ? AND student_id = ?
+                """,
+                (
+                    "2026-01-01T00:00:00+00:00",
+                    json.dumps({str(self.QUESTION_ID): 0}),
+                    self.EXAM_ID,
+                    self.STUDENT_ID,
+                ),
+            )
+
+        with self.assertRaises(HTTPException) as caught:
+            student_exams.autosave_exam(
+                self.EXAM_ID,
+                student_exams.ExamAutosave(
+                    answers={str(self.QUESTION_ID): 1}
+                ),
+                self.request,
+            )
+
+        self.assertEqual(caught.exception.status_code, 409)
+        self.assertEqual(
+            self.session()["answers_json"],
+            json.dumps({str(self.QUESTION_ID): 0}),
+        )
+        self.assertIsNone(self.attempt())
+
 
     def test_password_protected_autosave_is_blocked_before_unlock(self):
         with self.connect() as conn:

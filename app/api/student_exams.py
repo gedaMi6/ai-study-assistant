@@ -94,7 +94,8 @@ def _ensure_exam_session(connection, exam, student_id):
     connection.execute(
         """INSERT INTO teacher_test_sessions
            (test_id, student_id, started_at, expires_at, answers_json)
-           VALUES (?, ?, ?, ?, ?)""",
+           VALUES (?, ?, ?, ?, ?)
+           ON CONFLICT(test_id, student_id) DO NOTHING""",
         (exam["id"], student_id, started_at, expires_at, "{}"),
     )
     connection.commit()
@@ -450,38 +451,78 @@ def autosave_exam(
 
         _require_exam_unlocked(connection, exam, student["id"])
 
+        # Create a session if necessary. This helper may commit when creating
+        # one, so acquire the write lock immediately afterward and recheck all
+        # submission-sensitive state under that lock.
+        _ensure_exam_session(connection, exam, student["id"])
+        connection.execute("BEGIN IMMEDIATE")
+
         attempt = connection.execute(
             "SELECT id FROM teacher_test_attempts WHERE test_id = ? AND student_id = ?",
             (exam_id, student["id"]),
         ).fetchone()
         if attempt:
-            raise HTTPException(status_code=400, detail="This exam has already been submitted.")
+            raise HTTPException(
+                status_code=400,
+                detail="This exam has already been submitted.",
+            )
 
-        session = _ensure_exam_session(connection, exam, student["id"])
+        session = connection.execute(
+            """
+            SELECT expires_at, submitted_at
+            FROM teacher_test_sessions
+            WHERE test_id = ? AND student_id = ?
+            """,
+            (exam_id, student["id"]),
+        ).fetchone()
+
+        if not session:
+            raise HTTPException(
+                status_code=409,
+                detail="Exam session is unavailable.",
+            )
+
+        if session["submitted_at"] is not None:
+            raise HTTPException(
+                status_code=409,
+                detail="This exam session has already been finalized.",
+            )
+
         if _now_exam_time() >= _parse_exam_time(session["expires_at"]):
-            raise HTTPException(status_code=409, detail="Exam time has expired. Submitting saved answers.")
+            raise HTTPException(
+                status_code=409,
+                detail="Exam time has expired. Submitting saved answers.",
+            )
 
         # Autosave receives a complete snapshot from the browser.
-        # Replace old state so cleared answers cannot reappear later.
+        # The conditional update is a final guard against finalized sessions.
         snapshot = payload.answers
-
-        connection.execute(
+        cursor = connection.execute(
             """
             UPDATE teacher_test_sessions
             SET answers_json = ?, updated_at = CURRENT_TIMESTAMP
-            WHERE test_id = ? AND student_id = ?
+            WHERE test_id = ? AND student_id = ? AND submitted_at IS NULL
             """,
             (json.dumps(snapshot), exam_id, student["id"]),
         )
+
+        if cursor.rowcount != 1:
+            raise HTTPException(
+                status_code=409,
+                detail="Exam session has already been finalized.",
+            )
+
         connection.commit()
         return {"status": "success", "saved": True}
 
     except HTTPException:
         connection.rollback()
         raise
+    except Exception:
+        connection.rollback()
+        raise
     finally:
         connection.close()
-
 
 
 
