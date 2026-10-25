@@ -960,6 +960,17 @@ const markAllNotificationsRead =
     document.getElementById("markAllNotificationsRead");
 
 
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[character]);
+}
+
+
 function formatNotificationTime(value) {
     if (!value) {
         return "";
@@ -1032,22 +1043,22 @@ function renderNotifications(notifications, unreadCount) {
             <button
                 type="button"
                 class="notification-item ${unreadClass}"
-                data-notification-id="${notification.id}"
-                data-notification-type="${notification.type}"
-                data-reference-type="${notification.reference_type || ""}"
-                data-reference-id="${notification.reference_id || ""}"
+                data-notification-id="${escapeHtml(notification.id)}"
+                data-notification-type="${escapeHtml(notification.type)}"
+                data-reference-type="${escapeHtml(notification.reference_type || "")}"
+                data-reference-id="${escapeHtml(notification.reference_id || "")}"
             >
                 <div class="notification-item-title">
-                    <span>${notification.title}</span>
+                    <span>${escapeHtml(notification.title)}</span>
                     ${unreadDot}
                 </div>
 
                 <div class="notification-item-message">
-                    ${notification.message}
+                    ${escapeHtml(notification.message)}
                 </div>
 
                 <div class="notification-item-time">
-                    ${formatNotificationTime(notification.created_at)}
+                    ${escapeHtml(formatNotificationTime(notification.created_at))}
                 </div>
             </button>
         `;
