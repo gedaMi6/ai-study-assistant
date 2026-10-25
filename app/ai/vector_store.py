@@ -33,13 +33,24 @@ def add_chunk(
     )
 
 
-def search_chunks(query: str, n_results: int = 5):
+def search_chunks(
+    query: str,
+    n_results: int = 5,
+    document_id: str | None = None,
+):
     query_embedding = generate_embedding(query)
 
-    results = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=n_results,
-    )
+    query_kwargs = {
+        "query_embeddings": [query_embedding],
+        "n_results": n_results,
+    }
+
+    if document_id:
+        query_kwargs["where"] = {
+            "document_id": document_id
+        }
+
+    results = collection.query(**query_kwargs)
 
     return results
 

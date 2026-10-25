@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Flashcards - KANIA.AI</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/mobile.css">
+    <link rel="stylesheet" href="/css/flashcards.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon"><img src="/icons/logo-master.png" alt="KANIA.AI"></div>
+            <span>KANIA.AI</span>
+        </div>
+        <nav>
+            <a href="/app" class="nav-item"><span>⌂</span>Dashboard</a>
+            <a href="/chat.html" class="nav-item"><span>◉</span>AI Chat</a>
+            <a href="/quiz.html" class="nav-item"><span>?</span>Quizzes</a>
+            <a href="/flashcards.html" class="nav-item active"><span>▤</span>Flashcards</a>
+            <a href="/exams.html" class="nav-item"><span>📝</span>Exams</a>
+            <a href="/progress.html" class="nav-item"><span>↗</span>Progress</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="system-status"><span class="status-dot"></span>System Online</div>
+        </div>
+    </aside>
+
+    <main class="main-content flashcards-page">
+        <header class="topbar">
+            <div>
+                <h1>AI Flashcards</h1>
+                <p>Remember more with active recall and spaced repetition.</p>
+            </div>
+            <div class="profile"><div class="avatar" id="userAvatar">G</div></div>
+        </header>
+
+        <section class="welcome-card flashcards-hero">
+            <div>
+                <span class="eyebrow">YOUR PERSONAL STUDY DECK</span>
+                <h2>Learn it today.<br>Remember it longer.</h2>
+                <p>Turn your study documents into question-and-answer cards, then review them when they are due.</p>
+            </div>
+            <div class="welcome-icon" aria-hidden="true">🗂️</div>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <div>
+                    <h2>Create a deck</h2>
+                    <p>Choose your material and let AI prepare your flashcards.</p>
+                </div>
+            </div>
+            <div class="feature-card flashcard-form">
+                <label for="flashDocument">Study material</label>
+                <select id="flashDocument"><option value="">Loading documents...</option></select>
+
+                <label for="flashTitle">Deck name (optional)</label>
+                <input id="flashTitle" type="text" maxlength="200" placeholder="e.g. Computer Architecture Review">
+
+                <label for="flashTopic">Focus topic (optional)</label>
+                <input id="flashTopic" type="text" maxlength="200" placeholder="e.g. CPU scheduling">
+
+                <label for="flashCount">Number of cards</label>
+                <select id="flashCount">
+                    <option value="5">5 cards</option>
+                    <option value="10" selected>10 cards</option>
+                    <option value="15">15 cards</option>
+                    <option value="20">20 cards</option>
+                    <option value="30">30 cards</option>
+                </select>
+
+                <button id="generateFlashcards" class="primary-button">Generate flashcards</button>
+                <p id="flashStatus" class="flash-status" role="status" aria-live="polite">Loading your study materials...</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <div><h2>Your decks</h2><p>Continue a previous study session.</p></div>
+                <button id="refreshDecks" class="secondary-button" type="button">Refresh</button>
+            </div>
+            <div id="flashDecks" class="flash-decks">
+                <p class="flash-muted">Loading decks...</p>
+            </div>
+        </section>
+
+        <section class="section" id="studySection" hidden>
+            <div class="section-header">
+                <div><h2 id="studyTitle">Study session</h2><p id="studyProgress"></p></div>
+                <button id="closeStudy" class="secondary-button" type="button">Close session</button>
+            </div>
+            <div class="flash-study">
+                <div class="flash-study-meta">
+                    <span id="flashTopicLabel">General</span>
+                    <span id="flashDueLabel"></span>
+                </div>
+                <button id="flashCard" class="flash-card" type="button" aria-label="Reveal answer">
+                    <span id="flashSideLabel">QUESTION</span>
+                    <span id="flashCardText">Choose a deck to begin.</span>
+                    <span class="flash-flip-hint">Click or tap to reveal the answer</span>
+                </button>
+                <p id="reviewHint" class="flash-muted">Try to answer from memory before revealing the answer.</p>
+                <div id="reviewButtons" class="review-buttons" hidden>
+                    <button type="button" data-rating="again" class="rating-again">Again <small>10 min</small></button>
+                    <button type="button" data-rating="hard" class="rating-hard">Hard <small>1 day+</small></button>
+                    <button type="button" data-rating="good" class="rating-good">Good <small>Scheduled</small></button>
+                    <button type="button" data-rating="easy" class="rating-easy">Easy <small>Longer gap</small></button>
+                </div>
+                <p id="reviewStatus" class="flash-status" role="status" aria-live="polite"></p>
+            </div>
+        </section>
+    </main>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/profile.js"></script>
+    <script src="/js/mobile.js"></script>
+    <script src="/js/flashcards.js"></script>
+</body>
+</html>

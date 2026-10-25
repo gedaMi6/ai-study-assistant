@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    const topicFromUrl =
+        new URLSearchParams(window.location.search).get("topic");
+
     const documentSelect =
         document.getElementById("documentSelect");
 
@@ -36,6 +39,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const retryButton =
         document.getElementById("retryButton");
 
+
+    const focusedTopicLabel =
+        topicFromUrl
+            ? `Focused practice: ${escapeHtml(topicFromUrl)}`
+            : "";
 
     let currentQuiz = [];
     let currentQuizId = null;
@@ -120,7 +128,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             generateButton.disabled = false;
 
-            quizStatus.textContent = "";
+            quizStatus.textContent =
+                focusedTopicLabel;
 
         } catch (error) {
 
@@ -213,7 +222,10 @@ document.addEventListener("DOMContentLoaded", () => {
                                 documentId,
 
                             question_count:
-                                count
+                                count,
+
+                            topic:
+                                topicFromUrl || null
                         })
                     }
                 );

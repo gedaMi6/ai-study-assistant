@@ -5,10 +5,186 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI STUDY ASSISTANT</title>
+    <title>KANIA.AI</title>
 
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/mobile.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+    <style>
+        .student-notifications {
+            position: relative;
+            margin-right: 10px;
+        }
+
+        .notification-button {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            border: 1px solid var(--border-color, #e5e7eb);
+            border-radius: 12px;
+            background: var(--card-bg, #ffffff);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .notification-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .notification-icon {
+            line-height: 1;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            min-width: 19px;
+            height: 19px;
+            padding: 0 5px;
+            border-radius: 999px;
+            background: #dc2626;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ffffff;
+        }
+
+        .notification-panel {
+            position: absolute;
+            top: 54px;
+            right: 0;
+            width: 360px;
+            max-width: calc(100vw - 30px);
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .notification-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 15px 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .notification-panel-header > div {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .notification-panel-header strong {
+            font-size: 15px;
+            color: #111827;
+        }
+
+        .notification-panel-header span {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        #markAllNotificationsRead {
+            border: 0;
+            background: transparent;
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .notification-list {
+            max-height: 390px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid #f0f0f0;
+            background: #ffffff;
+            text-align: left;
+            padding: 14px 16px;
+            cursor: pointer;
+            display: block;
+        }
+
+        .notification-item:hover {
+            background: #f8fafc;
+        }
+
+        .notification-item.unread {
+            background: #eff6ff;
+        }
+
+        .notification-item-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            color: #111827;
+        }
+
+        .notification-item-message {
+            margin-top: 5px;
+            font-size: 13px;
+            line-height: 1.45;
+            color: #4b5563;
+        }
+
+        .notification-item-time {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .notification-unread-dot {
+            width: 7px;
+            height: 7px;
+            flex: 0 0 7px;
+            border-radius: 50%;
+            background: #2563eb;
+        }
+
+        .notification-empty {
+            padding: 30px 18px;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            .notification-panel {
+                position: fixed;
+                top: 70px;
+                right: 12px;
+                left: 12px;
+                width: auto;
+                max-width: none;
+            }
+
+            .student-notifications {
+                margin-right: 4px;
+            }
+        }
+    </style>
+
 </head>
 
 <body>
@@ -18,8 +194,8 @@
     <aside class="sidebar">
 
         <div class="logo">
-            <div class="logo-icon">AI</div>
-            <span>AI STUDY ASSISTANT</span>
+            <div class="logo-icon"><img src="/icons/logo-master.png" alt="KANIA.AI"></div>
+            <span>KANIA.AI</span>
         </div>
 
         <nav>
@@ -37,6 +213,13 @@
             <a href="/quiz.html" class="nav-item">
                 <span>?</span>
                 Quizzes
+            </a>
+
+            <a href="/flashcards.html" class="nav-item"><span>▤</span>Flashcards</a>
+
+            <a href="/exams.html" class="nav-item">
+                <span>📝</span>
+                Exams
             </a>
 
             <a href="/progress.html" class="nav-item">
@@ -69,7 +252,7 @@
             <div>
 
                 <span class="eyebrow">
-                    AI STUDY ASSISTANT STUDY WORKSPACE
+                    KANIA.AI STUDY WORKSPACE
                 </span>
 
                 <h1>
@@ -80,6 +263,52 @@
                     Let's make today's study session count.
                 </p>
 
+            </div>
+
+            <div class="student-notifications">
+                <button
+                    class="notification-button"
+                    id="notificationButton"
+                    type="button"
+                    aria-label="Notifications"
+                    aria-expanded="false"
+                >
+                    <span class="notification-icon">🔔</span>
+                    <span
+                        class="notification-badge"
+                        id="notificationBadge"
+                        hidden
+                    >0</span>
+                </button>
+
+                <div
+                    class="notification-panel"
+                    id="notificationPanel"
+                    hidden
+                >
+                    <div class="notification-panel-header">
+                        <div>
+                            <strong>Notifications</strong>
+                            <span id="notificationCount">0 unread</span>
+                        </div>
+
+                        <button
+                            type="button"
+                            id="markAllNotificationsRead"
+                        >
+                            Mark all read
+                        </button>
+                    </div>
+
+                    <div
+                        class="notification-list"
+                        id="notificationList"
+                    >
+                        <div class="notification-empty">
+                            No notifications yet.
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="profile">
@@ -132,7 +361,7 @@
             <div class="dashboard-hero-content">
 
                 <span class="hero-label">
-                    YOUR PERSONAL AI STUDY ASSISTANT
+                    YOUR PERSONAL KANIA.AI
                 </span>
 
                 <h2>
@@ -479,6 +708,34 @@
 
 
                 <a
+                    href="/exams.html"
+                    class="dashboard-action-card"
+                >
+
+                    <div class="dashboard-action-icon">
+                        📝
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Exams
+                        </h3>
+
+                        <p>
+                            Take exams assigned to you by your teacher.
+                        </p>
+
+                        <span>
+                            Open Exams →
+                        </span>
+
+                    </div>
+
+                </a>
+
+
+                <a
                     href="/progress.html"
                     class="dashboard-action-card"
                 >
@@ -514,7 +771,8 @@
 
     <!-- MARKDOWN SUPPORT -->
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <script src="/js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
 
@@ -682,6 +940,310 @@ if (profileUploadButton && profileImageInput) {
         }
     });
 }
+
+const notificationButton =
+    document.getElementById("notificationButton");
+
+const notificationPanel =
+    document.getElementById("notificationPanel");
+
+const notificationBadge =
+    document.getElementById("notificationBadge");
+
+const notificationList =
+    document.getElementById("notificationList");
+
+const notificationCount =
+    document.getElementById("notificationCount");
+
+const markAllNotificationsRead =
+    document.getElementById("markAllNotificationsRead");
+
+
+function formatNotificationTime(value) {
+    if (!value) {
+        return "";
+    }
+
+    const date = new Date(
+        value.replace(" ", "T") + "Z"
+    );
+
+    if (Number.isNaN(date.getTime())) {
+        return value;
+    }
+
+    return date.toLocaleString();
+}
+
+
+function notificationDestination(notification) {
+    if (notification.type === "exam_result_released") {
+        return "/progress.html";
+    }
+
+    if (
+        notification.type === "exam_assigned"
+        || notification.reference_type === "teacher_test"
+    ) {
+        return "/exams.html";
+    }
+
+    return null;
+}
+
+
+function renderNotifications(notifications, unreadCount) {
+    if (notificationBadge) {
+        notificationBadge.textContent =
+            unreadCount > 99 ? "99+" : unreadCount;
+
+        notificationBadge.hidden = unreadCount === 0;
+    }
+
+    if (notificationCount) {
+        notificationCount.textContent =
+            `${unreadCount} unread`;
+    }
+
+    if (!notificationList) {
+        return;
+    }
+
+    if (!notifications.length) {
+        notificationList.innerHTML = `
+            <div class="notification-empty">
+                No notifications yet.
+            </div>
+        `;
+        return;
+    }
+
+    notificationList.innerHTML = notifications.map(notification => {
+        const unreadClass =
+            notification.is_read ? "" : "unread";
+
+        const unreadDot =
+            notification.is_read
+                ? ""
+                : '<span class="notification-unread-dot"></span>';
+
+        return `
+            <button
+                type="button"
+                class="notification-item ${unreadClass}"
+                data-notification-id="${notification.id}"
+                data-notification-type="${notification.type}"
+                data-reference-type="${notification.reference_type || ""}"
+                data-reference-id="${notification.reference_id || ""}"
+            >
+                <div class="notification-item-title">
+                    <span>${notification.title}</span>
+                    ${unreadDot}
+                </div>
+
+                <div class="notification-item-message">
+                    ${notification.message}
+                </div>
+
+                <div class="notification-item-time">
+                    ${formatNotificationTime(notification.created_at)}
+                </div>
+            </button>
+        `;
+    }).join("");
+}
+
+
+async function loadStudentNotifications() {
+    try {
+        const response = await fetch(
+            "/api/student/notifications",
+            {
+                method: "GET",
+                credentials: "include"
+            }
+        );
+
+        if (response.status === 401) {
+            window.location.href = "/login.html";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                `Notification request failed: ${response.status}`
+            );
+        }
+
+        const data = await response.json();
+
+        renderNotifications(
+            data.notifications || [],
+            data.unread_count || 0
+        );
+
+    } catch (error) {
+        console.error(
+            "Failed to load notifications:",
+            error
+        );
+    }
+}
+
+
+async function markNotificationRead(notificationId) {
+    try {
+        const response = await fetch(
+            `/api/student/notifications/${notificationId}/read`,
+            {
+                method: "POST",
+                credentials: "include"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `Mark notification failed: ${response.status}`
+            );
+        }
+
+        await loadStudentNotifications();
+        return true;
+
+    } catch (error) {
+        console.error(
+            "Failed to mark notification as read:",
+            error
+        );
+        return false;
+    }
+}
+
+
+if (notificationButton && notificationPanel) {
+
+    notificationButton.addEventListener(
+        "click",
+        function(event) {
+            event.stopPropagation();
+
+            const isHidden =
+                notificationPanel.hidden;
+
+            notificationPanel.hidden = !isHidden;
+
+            notificationButton.setAttribute(
+                "aria-expanded",
+                String(isHidden)
+            );
+
+            if (isHidden) {
+                loadStudentNotifications();
+            }
+        }
+    );
+
+    document.addEventListener(
+        "click",
+        function(event) {
+            if (
+                !notificationPanel.contains(event.target)
+                && !notificationButton.contains(event.target)
+            ) {
+                notificationPanel.hidden = true;
+
+                notificationButton.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+            }
+        }
+    );
+}
+
+
+if (notificationList) {
+    notificationList.addEventListener(
+        "click",
+        async function(event) {
+            const item =
+                event.target.closest(".notification-item");
+
+            if (!item || item.dataset.processing === "true") {
+                return;
+            }
+
+            const notificationId =
+                item.dataset.notificationId;
+
+            const destination = notificationDestination({
+                type: item.dataset.notificationType,
+                reference_type: item.dataset.referenceType,
+                reference_id: item.dataset.referenceId
+            });
+
+            // Prevent repeat clicks while the server saves the read state.
+            item.dataset.processing = "true";
+            item.disabled = true;
+
+            const markedRead =
+                await markNotificationRead(notificationId);
+
+            if (!markedRead) {
+                item.disabled = false;
+                delete item.dataset.processing;
+                return;
+            }
+
+            if (destination) {
+                window.location.href = destination;
+            }
+        }
+    );
+}
+
+
+if (markAllNotificationsRead) {
+    markAllNotificationsRead.addEventListener(
+        "click",
+        async function(event) {
+            event.stopPropagation();
+
+            try {
+                const response = await fetch(
+                    "/api/student/notifications/read-all",
+                    {
+                        method: "POST",
+                        credentials: "include"
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(
+                        `Mark all failed: ${response.status}`
+                    );
+                }
+
+                await loadStudentNotifications();
+
+            } catch (error) {
+                console.error(
+                    "Failed to mark all notifications:",
+                    error
+                );
+            }
+        }
+    );
+}
+
+
+loadStudentNotifications();
+
+setInterval(
+    loadStudentNotifications,
+    30000
+);
 
 
 loadCurrentUser();

@@ -1,0 +1,381 @@
+.flashcards-page .flashcards-hero {
+    padding: 26px;
+    margin-bottom: 24px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #172554, #3730a3);
+    color: #fff;
+}
+
+.flashcards-page .flashcards-hero h2 {
+    margin: 0 0 8px;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.flashcards-page .flashcards-hero p {
+    margin: 0;
+    max-width: 680px;
+    line-height: 1.65;
+    color: #e0e7ff;
+}
+
+.flashcards-page .flashcard-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.flashcards-page .flashcards-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.flashcards-page .flashcards-field label {
+    font-weight: 600;
+    font-size: .92rem;
+}
+
+.flashcards-page .flashcards-field input,
+.flashcards-page .flashcards-field select {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color, #d1d5db);
+    border-radius: 10px;
+    background: var(--card-bg, #fff);
+    color: var(--text-color, #111827);
+    font: inherit;
+}
+
+.flashcards-page .flashcards-field-wide,
+.flashcards-page .flashcard-form-actions {
+    grid-column: 1 / -1;
+}
+
+.flashcards-page .flashcard-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.flashcards-page .flashcards-primary,
+.flashcards-page .flash-study-button {
+    border: 0;
+    border-radius: 10px;
+    padding: 11px 16px;
+    background: #4f46e5;
+    color: #fff;
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.flashcards-page .flashcards-primary:disabled,
+.flashcards-page .flash-study-button:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+.flashcards-page .flashStatus,
+.flashcards-page #flashStatus,
+.flashcards-page #reviewStatus {
+    font-size: .9rem;
+    line-height: 1.5;
+}
+
+.flashcards-page .is-error {
+    color: #dc2626;
+}
+
+.flashcards-page .flash-muted,
+.flashcards-page .flashcards-empty {
+    color: var(--muted-color, #6b7280);
+    line-height: 1.6;
+}
+
+.flashcards-page .flash-decks {
+    display: grid;
+    gap: 12px;
+}
+
+.flashcards-page .flashcards-deck {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 17px;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 14px;
+    background: var(--card-bg, #fff);
+}
+
+.flashcards-page .flashcards-deck-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-size: 1.5rem;
+}
+
+.flashcards-page .flashcards-deck-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.flashcards-page .flashcards-deck-info h3 {
+    margin: 0 0 5px;
+    overflow-wrap: anywhere;
+}
+
+.flashcards-page .flashcards-deck-info p {
+    margin: 0 0 8px;
+    color: var(--muted-color, #6b7280);
+    font-size: .9rem;
+    overflow-wrap: anywhere;
+}
+
+.flashcards-page .flashcards-deck-meta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: .82rem;
+    color: var(--muted-color, #6b7280);
+}
+
+.flashcards-page .flash-study {
+    margin-top: 24px;
+}
+
+.flashcards-page .flash-study-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.flashcards-page .flash-study-header h2 {
+    margin: 0;
+}
+
+.flashcards-page .flashcards-secondary {
+    border: 1px solid var(--border-color, #d1d5db);
+    border-radius: 9px;
+    padding: 8px 12px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.flashcards-page .flash-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 260px;
+    padding: 28px;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 18px;
+    background: var(--card-bg, #fff);
+    color: var(--text-color, #111827);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .18s ease, transform .18s ease;
+}
+
+.flashcards-page .flash-card:hover {
+    border-color: #818cf8;
+    transform: translateY(-2px);
+}
+
+.flashcards-page .flash-card.is-complete {
+    cursor: default;
+    background: #f0fdf4;
+    border-color: #86efac;
+}
+
+.flashcards-page .flash-card-label {
+    margin-bottom: 16px;
+    color: #6366f1;
+    font-size: .82rem;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+}
+
+.flashcards-page .flash-card-text {
+    max-width: 760px;
+    font-size: clamp(1.15rem, 3vw, 1.7rem);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.flashcards-page .flash-study-meta {
+    margin-top: 18px;
+    color: var(--muted-color, #6b7280);
+    font-size: .9rem;
+}
+
+.flashcards-page .review-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.flashcards-page .review-buttons button {
+    border: 0;
+    border-radius: 10px;
+    padding: 11px 17px;
+    color: #fff;
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.flashcards-page .review-buttons button:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+.flashcards-page [data-rating="again"] {
+    background: #dc2626;
+}
+
+.flashcards-page [data-rating="hard"] {
+    background: #d97706;
+}
+
+.flashcards-page [data-rating="good"] {
+    background: #059669;
+}
+
+.flashcards-page [data-rating="easy"] {
+    background: #2563eb;
+}
+
+.flashcards-page .flashcards-review-hint {
+    margin-top: 12px;
+    color: var(--muted-color, #6b7280);
+    font-size: .9rem;
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .flashcards-page .flashcard-form {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .flashcards-page .flashcards-field-wide,
+    .flashcards-page .flashcard-form-actions {
+        grid-column: auto;
+    }
+
+    .flashcards-page .flashcards-deck {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .flashcards-page .flash-study-button {
+        width: 100%;
+    }
+
+    .flashcards-page .flash-card {
+        min-height: 230px;
+        padding: 22px 16px;
+    }
+
+    .flashcards-page .review-buttons button {
+        flex: 1 1 38%;
+    }
+}
+
+
+/* Match the actual KANIA.AI flashcards HTML. */
+.flashcards-page .flashcard-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+}
+
+.flashcards-page .flashcard-form > label {
+    margin-top: 6px;
+    font-weight: 600;
+}
+
+.flashcards-page .flashcard-form > input,
+.flashcards-page .flashcard-form > select {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color, #d1d5db);
+    border-radius: 10px;
+    background: var(--card-bg, #fff);
+    color: var(--text-color, #111827);
+    font: inherit;
+}
+
+.flashcards-page #flashStatus,
+.flashcards-page #reviewStatus {
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.flashcards-page #flashSideLabel {
+    display: block;
+    margin-bottom: 16px;
+    color: #6366f1;
+    font-size: .82rem;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+}
+
+.flashcards-page #flashCardText {
+    display: block;
+    max-width: 760px;
+    font-size: clamp(1.15rem, 3vw, 1.7rem);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.flashcards-page #reviewHint {
+    margin-top: 12px;
+    text-align: center;
+}
+
+.flashcards-page .review-buttons[hidden],
+.flashcards-page #studySection[hidden] {
+    display: none !important;
+}
+
+.flashcards-page .flash-decks {
+    display: grid;
+    gap: 12px;
+}
+
+.flashcards-page .flash-study {
+    margin-top: 16px;
+}
+
+.flashcards-page .flash-muted {
+    color: var(--muted-color, #6b7280);
+    line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+    .flashcards-page .flashcard-form {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat - AI STUDY ASSISTANT</title>
+    <title>AI Chat - KANIA.AI</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/mobile.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
 </head>
 
 <body>
@@ -13,8 +14,8 @@
     <aside class="sidebar">
 
         <div class="logo">
-            <div class="logo-icon">AI</div>
-            <span>AI STUDY ASSISTANT</span>
+            <div class="logo-icon"><img src="/icons/logo-master.png" alt="KANIA.AI"></div>
+            <span>KANIA.AI</span>
         </div>
 
         <nav>
@@ -31,6 +32,11 @@
             <a href="/quiz.html" class="nav-item">
                 <span>?</span>
                 Quizzes
+            </a>
+
+            <a href="/exams.html" class="nav-item">
+                <span>📝</span>
+                Exams
             </a>
 
             <a href="/progress.html" class="nav-item">
@@ -67,7 +73,7 @@
 
             <div class="section-header">
                 <div>
-                    <span class="eyebrow">AI STUDY ASSISTANT</span>
+                    <span class="eyebrow">KANIA.AI</span>
                     <h2>Ask your study assistant</h2>
                     <p>
                         Ask questions about the documents you have uploaded.
@@ -95,25 +101,23 @@
 
                     <div class="recent-chats-header">
                         <span>Recent chats</span>
-                    <div class="recent-chats-header">
-                       <span>Recent chats</span>
 
-                       <button
-                           type="button"
-                           id="newChatButton"
-                           class="new-chat-button"
-                           aria-label="New chat"
-                           title="New chat"
-                       >
-                           <svg
-                              viewBox="0 0 24 24"
-                              aria-hidden="true"
-                           >
-                              <path d="M12 5v14"></path>
-                              <path d="M5 12h14"></path>
-                           </svg>
+                        <button
+                            type="button"
+                            id="newChatButton"
+                            class="new-chat-button"
+                            aria-label="New chat"
+                            title="New chat"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M12 5v14"></path>
+                                <path d="M5 12h14"></path>
+                            </svg>
 
-                           <span>New chat</span>
+                            <span>New chat</span>
                         </button>
                     </div>
 
@@ -127,6 +131,18 @@
 
 
                 <div class="chat-main-panel">
+
+                    <button
+                        type="button"
+                        id="chatHistoryToggle"
+                        class="chat-history-toggle"
+                        aria-label="Open chat history"
+                        title="Chat history"
+                    >
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
     <button
         type="button"
         id="scrollToBottomButton"
@@ -145,7 +161,7 @@
                             <div class="message-avatar">AI</div>
 
                             <div class="message-content">
-                                <strong>AI STUDY ASSISTANT</strong>
+                                <strong>KANIA.AI</strong>
                                 <p>
                                     Hi Geda! Ask me a question about your study
                                     materials and I'll answer using your documents.
@@ -225,7 +241,8 @@
     </main>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <script src="/js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
     
 <!-- Rename chat modal -->

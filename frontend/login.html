@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log in | AI Study Assistant</title>
+    <title>Log in | KANIA.AI</title>
     <link rel="stylesheet" href="/css/auth.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
 </head>
 <body>
 
@@ -44,6 +45,14 @@
                 >
             </div>
 
+            <div class="form-group">
+                <label for="loginRole">Log in as</label>
+                <select id="loginRole" required>
+                    <option value="student">Student</option>
+                    <option value="admin">Administrator</option>
+                </select>
+            </div>
+
             <button type="submit" class="auth-button" id="loginButton">
                 Log in
             </button>
@@ -62,7 +71,7 @@
         </div>
     </div>
 
-    <a href="/" class="back-home">← Back to AI Study Assistant</a>
+    <a href="/" class="back-home">← Back to KANIA.AI</a>
 
 </div>
 
@@ -88,7 +97,8 @@ form.addEventListener("submit", async (event) => {
             credentials: "include",
             body: JSON.stringify({
                 email: document.getElementById("email").value,
-                password: document.getElementById("password").value
+                password: document.getElementById("password").value,
+                role: document.getElementById("loginRole").value
             })
         });
 
@@ -98,29 +108,16 @@ form.addEventListener("submit", async (event) => {
             throw new Error(data.detail || "Login failed.");
         }
 
-        // Store the authenticated user's ID so chat sessions
-        // are kept separate when different accounts use the same browser.
-        localStorage.setItem(
-            "study_assistant_user_id",
-            String(data.user.id)
+        // Keep authentication isolated to this browser tab.
+        // sessionStorage is not shared between tabs.
+        sessionStorage.setItem(
+            "study_assistant_auth_session",
+            data.session_id
         );
 
-        const previousSessionUser =
-            localStorage.getItem(
-                "study_assistant_session_user_id"
-            );
-
-        if (
-            previousSessionUser !==
-            String(data.user.id)
-        ) {
-            localStorage.removeItem(
-                "study_assistant_session_id"
-            );
-        }
-
+        // Keep the user ID available for existing chat-session logic.
         localStorage.setItem(
-            "study_assistant_session_user_id",
+            "study_assistant_user_id",
             String(data.user.id)
         );
 
@@ -129,7 +126,8 @@ form.addEventListener("submit", async (event) => {
 
         setTimeout(() => {
             window.location.href =
-                data.user.role === "admin" ? "/admin" : "/app";
+                data.user.role === "admin" ? "/admin" :
+                data.user.role === "teacher" ? "/login.html?notice=teacher_portal_removed" : "/app";
         }, 500);
 
     } catch (error) {

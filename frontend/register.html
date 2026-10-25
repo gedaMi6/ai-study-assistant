@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create account | AI Study Assistant</title>
+    <title>Create account | KANIA.AI</title>
     <link rel="stylesheet" href="/css/auth.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
 </head>
 <body>
 
@@ -15,34 +16,98 @@
     </div>
 
     <div class="auth-card">
-        <h1>Create your account</h1>
-        <p class="subtitle">
-            Start learning with your personal AI study assistant.
+        <h1 id="pageTitle">Create your account</h1>
+
+        <p class="subtitle" id="pageSubtitle">
+            Start learning with your personal KANIA.AI workspace.
         </p>
 
-        <form id="registerForm">
+        <!-- STEP 1: NAME + EMAIL -->
+        <div id="step1">
+
+            <form id="emailForm">
+
+                <div class="form-group">
+                    <label for="name">Full name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Your name"
+                        required
+                        autocomplete="name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="you@example.com"
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="auth-button"
+                    id="sendCodeButton"
+                >
+                    Send verification code
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- STEP 2: VERIFICATION CODE -->
+        <div id="step2" style="display: none;">
 
             <div class="form-group">
-                <label for="name">Full name</label>
+                <label for="verificationCode">Verification code</label>
                 <input
                     type="text"
-                    id="name"
-                    placeholder="Your name"
+                    id="verificationCode"
+                    placeholder="Enter 6-digit code"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    maxlength="6"
                     required
-                    autocomplete="name"
                 >
+                <div class="password-hint">
+                    We sent a 6-digit code to your email. It expires in 15 minutes.
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="you@example.com"
-                    required
-                    autocomplete="email"
-                >
-            </div>
+            <button
+                type="button"
+                class="auth-button"
+                id="verifyCodeButton"
+            >
+                Verify email
+            </button>
+
+            <button
+                type="button"
+                id="changeEmailButton"
+                style="
+                    width: 100%;
+                    margin-top: 10px;
+                    background: transparent;
+                    border: none;
+                    cursor: pointer;
+                    color: inherit;
+                    opacity: 0.75;
+                "
+            >
+                ← Change email
+            </button>
+
+        </div>
+
+        <!-- STEP 3: PASSWORD -->
+        <div id="step3" style="display: none;">
 
             <div class="form-group">
                 <label for="password">Password</label>
@@ -50,7 +115,6 @@
                     type="password"
                     id="password"
                     placeholder="At least 8 characters"
-                    required
                     minlength="8"
                     autocomplete="new-password"
                 >
@@ -65,19 +129,22 @@
                     type="password"
                     id="confirmPassword"
                     placeholder="Enter your password again"
-                    required
                     minlength="8"
                     autocomplete="new-password"
                 >
             </div>
 
-            <button type="submit" class="auth-button" id="registerButton">
+            <button
+                type="button"
+                class="auth-button"
+                id="createAccountButton"
+            >
                 Create account
             </button>
 
-            <div id="message" class="message"></div>
+        </div>
 
-        </form>
+        <div id="message" class="message"></div>
 
         <div class="auth-footer">
             Already have an account?
@@ -85,42 +152,234 @@
         </div>
     </div>
 
-    <a href="/" class="back-home">← Back to AI Study Assistant</a>
+    <a href="/" class="back-home">← Back to KANIA.AI</a>
 
 </div>
 
 <script>
-const form = document.getElementById("registerForm");
-const button = document.getElementById("registerButton");
+const step1 = document.getElementById("step1");
+const step2 = document.getElementById("step2");
+const step3 = document.getElementById("step3");
+
+const emailForm = document.getElementById("emailForm");
+
+const nameInput = document.getElementById("name");
+const emailInput = document.getElementById("email");
+const verificationCodeInput = document.getElementById("verificationCode");
+const passwordInput = document.getElementById("password");
+const confirmPasswordInput = document.getElementById("confirmPassword");
+
+const sendCodeButton = document.getElementById("sendCodeButton");
+const verifyCodeButton = document.getElementById("verifyCodeButton");
+const createAccountButton = document.getElementById("createAccountButton");
+const changeEmailButton = document.getElementById("changeEmailButton");
+
+const pageTitle = document.getElementById("pageTitle");
+const pageSubtitle = document.getElementById("pageSubtitle");
 const message = document.getElementById("message");
 
-form.addEventListener("submit", async (event) => {
+let verifiedEmail = "";
+
+function showMessage(type, text) {
+    message.className = "message " + type;
+    message.textContent = text;
+}
+
+function clearMessage() {
+    message.className = "message";
+    message.textContent = "";
+}
+
+function showStep(step) {
+    step1.style.display = step === 1 ? "block" : "none";
+    step2.style.display = step === 2 ? "block" : "none";
+    step3.style.display = step === 3 ? "block" : "none";
+
+    if (step === 1) {
+        pageTitle.textContent = "Create your account";
+        pageSubtitle.textContent =
+            "Start learning with your personal KANIA.AI workspace.";
+    }
+
+    if (step === 2) {
+        pageTitle.textContent = "Verify your email";
+        pageSubtitle.textContent =
+            "Check your inbox for the verification code.";
+    }
+
+    if (step === 3) {
+        pageTitle.textContent = "Create your password";
+        pageSubtitle.textContent =
+            "Your email is verified. Now secure your account.";
+    }
+
+    clearMessage();
+}
+
+/* STEP 1: SEND VERIFICATION CODE */
+emailForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim().toLowerCase();
 
-    if (password !== confirmPassword) {
-        message.className = "message error";
-        message.textContent = "Passwords do not match.";
+    if (name.length < 2) {
+        showMessage("error", "Name must contain at least 2 characters.");
         return;
     }
 
-    button.disabled = true;
-    button.textContent = "Creating account...";
-    message.className = "message";
-    message.textContent = "";
+    if (!email) {
+        showMessage("error", "Please enter your email address.");
+        return;
+    }
+
+    sendCodeButton.disabled = true;
+    sendCodeButton.textContent = "Sending code...";
+    clearMessage();
 
     try {
-        const response = await fetch("/auth/register", {
+        const response = await fetch("/auth/register/send-code", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: name,
+                email: email
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.detail || "Unable to send verification code."
+            );
+        }
+
+        showStep(2);
+
+        showMessage(
+            "success",
+            "Verification code sent. Check your email."
+        );
+
+        verificationCodeInput.focus();
+
+    } catch (error) {
+        showMessage("error", error.message);
+    } finally {
+        sendCodeButton.disabled = false;
+        sendCodeButton.textContent = "Send verification code";
+    }
+});
+
+/* STEP 2: VERIFY CODE */
+verifyCodeButton.addEventListener("click", async () => {
+    const email = emailInput.value.trim().toLowerCase();
+    const code = verificationCodeInput.value.trim();
+
+    if (!/^\d{6}$/.test(code)) {
+        showMessage(
+            "error",
+            "Enter the 6-digit verification code."
+        );
+        return;
+    }
+
+    verifyCodeButton.disabled = true;
+    verifyCodeButton.textContent = "Verifying...";
+    clearMessage();
+
+    try {
+        const response = await fetch("/auth/register/verify-code", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                code: code
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.detail || "Verification failed."
+            );
+        }
+
+        verifiedEmail = email;
+
+        showStep(3);
+
+        showMessage(
+            "success",
+            "Email verified successfully."
+        );
+
+        passwordInput.focus();
+
+    } catch (error) {
+        showMessage("error", error.message);
+    } finally {
+        verifyCodeButton.disabled = false;
+        verifyCodeButton.textContent = "Verify email";
+    }
+});
+
+/* CHANGE EMAIL */
+changeEmailButton.addEventListener("click", () => {
+    verificationCodeInput.value = "";
+    showStep(1);
+    emailInput.focus();
+});
+
+/* STEP 3: CREATE ACCOUNT */
+createAccountButton.addEventListener("click", async () => {
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+
+    if (!verifiedEmail) {
+        showMessage(
+            "error",
+            "Please verify your email first."
+        );
+        showStep(1);
+        return;
+    }
+
+    if (password.length < 8) {
+        showMessage(
+            "error",
+            "Password must contain at least 8 characters."
+        );
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        showMessage(
+            "error",
+            "Passwords do not match."
+        );
+        return;
+    }
+
+    createAccountButton.disabled = true;
+    createAccountButton.textContent = "Creating account...";
+    clearMessage();
+
+    try {
+        const response = await fetch("/auth/register/complete", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             credentials: "include",
             body: JSON.stringify({
-                name: document.getElementById("name").value,
-                email: document.getElementById("email").value,
+                email: verifiedEmail,
                 password: password
             })
         });
@@ -128,22 +387,31 @@ form.addEventListener("submit", async (event) => {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.detail || "Registration failed.");
+            throw new Error(
+                data.detail || "Account creation failed."
+            );
         }
 
-        message.className = "message success";
-        message.textContent = "Account created. Opening your dashboard...";
+        showMessage(
+            "success",
+            "Account created. Opening your dashboard..."
+        );
 
         setTimeout(() => {
             window.location.href = "/app";
-        }, 500);
+        }, 700);
 
     } catch (error) {
-        message.className = "message error";
-        message.textContent = error.message;
-        button.disabled = false;
-        button.textContent = "Create account";
+        showMessage("error", error.message);
+        createAccountButton.disabled = false;
+        createAccountButton.textContent = "Create account";
     }
+});
+
+/* Only allow digits in verification code */
+verificationCodeInput.addEventListener("input", () => {
+    verificationCodeInput.value =
+        verificationCodeInput.value.replace(/\D/g, "").slice(0, 6);
 });
 </script>
 

@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Exam | KANIA.AI</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png?v=2">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/mobile.css">
+
+    <style>
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            display: block;
+            border-radius: 10px;
+            flex: 0 0 42px;
+        }
+
+        .exam-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .exam-header {
+            margin-bottom: 32px;
+        }
+
+        .exam-timer {
+            position: sticky;
+            top: 10px;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 0 0 22px;
+            padding: 14px 18px;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-radius: 14px;
+            background: var(--card-bg, #ffffff);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+            color: #000000;
+        }
+
+        .exam-timer-value {
+            font-size: 1.35rem;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .exam-timer-status {
+            font-size: 0.9rem;
+            color: #555555;
+        }
+
+        .exam-timer.expiring {
+            border-color: #c62828;
+        }
+
+        .exam-timer.expiring .exam-timer-value {
+            color: #c62828;
+        }
+
+        .exam-question {
+            margin-bottom: 24px;
+            padding: 24px;
+            border-radius: 16px;
+            background: var(--card-bg, #ffffff);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .exam-question h3 {
+            margin-bottom: 18px;
+        }
+
+        .exam-option {
+            display: block;
+            margin: 10px 0;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .exam-option:hover {
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        .exam-option input {
+            margin-right: 10px;
+        }
+
+        .exam-submit {
+            margin-top: 10px;
+            margin-bottom: 40px;
+        }
+
+        .exam-result {
+            padding: 28px;
+            border-radius: 16px;
+            text-align: center;
+            background: var(--card-bg, #ffffff);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .exam-result-score {
+            font-size: 42px;
+            font-weight: 800;
+            margin: 12px 0;
+        }
+
+        .exam-error {
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        /* Readable exam text */
+        .exam-content,
+        .exam-content h1,
+        .exam-content h2,
+        .exam-content h3,
+        .exam-content p,
+        .exam-content label,
+        .exam-question,
+        .exam-option {
+            color: #000000 !important;
+        }
+
+
+        /* Readable exam result text */
+        .exam-result,
+        .exam-result h1,
+        .exam-result h2,
+        .exam-result h3,
+        .exam-result p,
+        .exam-result strong,
+        .exam-result span,
+        .exam-result div {
+            color: #000000 !important;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <header class="topbar">
+        <div class="topbar-inner">
+
+            <a href="/dashboard.html" class="brand">
+                <img src="/icons/logo-master.png" alt="KANIA.AI">
+                <span>KANIA.AI</span>
+            </a>
+
+            <a href="/exams.html" class="topbar-link">
+                ← Exams
+            </a>
+
+        </div>
+    </header>
+
+
+    <main class="section">
+
+        <div class="exam-container">
+
+            <div id="examContent">
+                <div class="dashboard-loading-card">
+                    <div class="dashboard-loading-dot"></div>
+                    <span>Loading exam...</span>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/mobile.js"></script>
+<script>
+
+        const examId =
+            new URLSearchParams(window.location.search).get("id");
+
+        const examContent =
+            document.getElementById("examContent");
+
+
+        function escapeHtml(value) {
+
+            const div = document.createElement("div");
+
+            div.textContent = value ?? "";
+
+            return div.innerHTML;
+        }
+
+
+        function showError(message) {
+
+            examContent.innerHTML = `
+                <div class="exam-error">
+                    <h2>Unable to open exam</h2>
+
+                    <p>
+                        ${escapeHtml(message)}
+                    </p>
+
+                    <a href="/exams.html">
+                        ← Back to Exams
+                    </a>
+                </div>
+            `;
+        }
+
+
+        let examMonitoringActive = false;
+        let lastMonitoringEvent = {};
+        let lastVisibilityState = document.visibilityState;
+
+        let examExpiresAt = null;
+        let examTimerInterval = null;
+        let examAutosaveInterval = null;
+        let examAutosaveInFlight = false;
+        let examAutosaveQueue = Promise.resolve();
+        let examSubmitInFlight = false;
+        let examSubmitWaiting = false;
+        let examIsExpired = false;
+        let examSaveDebounce = null;
+        let examFormReference = null;
+
+
+        async function sendMonitoringEvent(eventType, eventDetail = null) {
+
+            if (!examMonitoringActive || !examId) {
+                return;
+            }
+
+            const now = Date.now();
+            const eventKey = `${eventType}:${eventDetail || ""}`;
+
+            if (
+                lastMonitoringEvent[eventKey] &&
+                now - lastMonitoringEvent[eventKey] < 3000
+            ) {
+                return;
+            }
+
+            lastMonitoringEvent[eventKey] = now;
+
+            try {
+                await fetch(
+                    `/api/student/exams/${encodeURIComponent(examId)}/monitor`,
+                    {
+                        method: "POST",
+                        credentials: "include",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            event_type: eventType,
+                            event_detail: eventDetail
+                        })
+                    }
+                );
+            } catch (error) {
+                console.error(
+                    "Unable to record exam monitoring event:",
+                    error
+                );
+            }
+        }
+
+
+        document.addEventListener(
+            "visibilitychange",
+            () => {
+                if (!examMonitoringActive) {
+                    return;
+                }
+
+                const currentState =
+                    document.visibilityState;
+
+                if (
+                    currentState === "hidden" &&
+                    lastVisibilityState !== "hidden"
+                ) {
+                    sendMonitoringEvent(
+                        "TAB_SWITCH",
+                        "Exam page became hidden."
+                    );
+                }
+
+                if (
+                    currentState === "visible" &&
+                    lastVisibilityState === "hidden"
+                ) {
+                    sendMonitoringEvent(
+                        "WINDOW_FOCUS",
+                        "Exam page became visible again."
+                    );
+                }
+
+                lastVisibilityState = currentState;
+            }
+        );
+
+
+        window.addEventListener(
+            "blur",
+            () => {
+                if (!examMonitoringActive) {
+                    return;
+                }
+
+                sendMonitoringEvent(
+                    "WINDOW_BLUR",
+                    "Exam window lost focus."
+                );
+            }
+        );
+
+
+        window.addEventListener(
+            "focus",
+            () => {
+                if (!examMonitoringActive) {
+                    return;
+                }
+
+                sendMonitoringEvent(
+                    "WINDOW_FOCUS",
+                    "Exam window regained focus."
+                );
+            }
+        );
+
+
+        document.addEventListener(
+            "keydown",
+            (event) => {
+                if (!examMonitoringActive) {
+                    return;
+                }
+
+                const key =
+                    event.key.toUpperCase();
+
+                const shortcutParts = [];
+
+                if (event.ctrlKey) {
+                    shortcutParts.push("Ctrl");
+                }
+
+                if (event.shiftKey) {
+                    shortcutParts.push("Shift");
+                }
+
+                if (event.altKey) {
+                    shortcutParts.push("Alt");
+                }
+
+                if (event.metaKey) {
+                    shortcutParts.push("Meta");
+                }
+
+                shortcutParts.push(key);
+
+                const shortcut =
+                    shortcutParts.join("+");
+
+                const forbidden =
+                    event.key === "F12" ||
+                    (
+                        event.ctrlKey &&
+                        ["C", "V", "X", "A", "U"].includes(key)
+                    ) ||
+                    (
+                        event.ctrlKey &&
+                        event.shiftKey &&
+                        ["I", "J"].includes(key)
+                    );
+
+                if (!forbidden) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                sendMonitoringEvent(
+                    "FORBIDDEN_KEY",
+                    shortcut
+                );
+            }
+        );
+
+
+        async function loadExam() {
+
+            if (!examId) {
+                showError("No exam was selected.");
+                return;
+            }
+
+
+            try {
+
+                const response = await fetch(
+                    `/api/student/exams/${encodeURIComponent(examId)}`,
+                    {
+                        method: "GET",
+                        credentials: "include"
+                    }
+                );
+
+
+                if (response.status === 401) {
+                    window.location.href = "/login.html";
+                    return;
+                }
+
+
+                if (!response.ok) {
+
+                    let message =
+                        "This exam could not be loaded.";
+
+                    try {
+                        const data = await response.json();
+
+                        if (data.detail) {
+                            message = data.detail;
+                        }
+                    } catch (_) {}
+
+                    throw new Error(message);
+                }
+
+
+                const data = await response.json();
+                const exam = data.exam;
+
+                if (exam.password_required && !exam.unlocked) {
+                    renderPasswordGate(exam);
+                    return;
+                }
+
+                if (exam.completed) {
+
+                    showResult(
+                        exam.score,
+                        exam.total_questions,
+                        exam.percentage
+                    );
+
+                    return;
+                }
+
+
+                if (exam.expires_at) {
+                    examExpiresAt = new Date(exam.expires_at).getTime();
+                }
+
+                renderExam(exam);
+
+                if (examExpiresAt && Date.now() >= examExpiresAt) {
+                    examIsExpired = true;
+                    await submitExam(null, true);
+                    return;
+                }
+
+                startExamTimer();
+                startExamAutosave();
+
+                examMonitoringActive = true;
+
+                sendMonitoringEvent(
+                    "EXAM_STARTED",
+                    "Student started the exam."
+                );
+
+            } catch (error) {
+
+                console.error(error);
+
+                showError(error.message);
+            }
+        }
+
+
+        function renderPasswordGate(exam) {
+            examMonitoringActive = false;
+            examContent.innerHTML = `
+                <section class="exam-question" style="max-width:520px;margin:40px auto;">
+                    <p class="eyebrow">PASSWORD-PROTECTED EXAM</p>
+                    <h1>${escapeHtml(exam.title)}</h1>
+                    <p>${escapeHtml(exam.description || "Enter the password provided by your teacher to begin.")}</p>
+                    <form id="examPasswordForm">
+                        <label for="examPasswordEntry" style="display:block;margin:12px 0 8px;font-weight:600;">Exam password</label>
+                        <input id="examPasswordEntry" type="password" maxlength="128"
+                            autocomplete="current-password" required
+                            style="width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;">
+                        <p id="examPasswordError" role="alert" style="color:#b91c1c;min-height:1.4em;"></p>
+                        <button id="unlockExamBtn" class="primary-btn" type="submit" style="width:100%;">Unlock Exam</button>
+                    </form>
+                    <p style="margin-top:16px;"><a href="/exams.html">← Back to Exams</a></p>
+                </section>
+            `;
+
+            const form = document.getElementById("examPasswordForm");
+            const input = document.getElementById("examPasswordEntry");
+            const button = document.getElementById("unlockExamBtn");
+            const error = document.getElementById("examPasswordError");
+
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                error.textContent = "";
+                button.disabled = true;
+                button.textContent = "Checking...";
+                try {
+                    const response = await fetch(
+                        `/api/student/exams/${encodeURIComponent(examId)}/unlock`,
+                        {
+                            method: "POST",
+                            credentials: "include",
+                            headers: {"Content-Type": "application/json"},
+                            body: JSON.stringify({password: input.value})
+                        }
+                    );
+                    const data = await response.json().catch(() => ({}));
+                    if (response.status === 401) {
+                        window.location.href = "/login.html";
+                        return;
+                    }
+                    if (!response.ok) {
+                        throw new Error(data.detail || "Unable to unlock this exam.");
+                    }
+                    await loadExam();
+                } catch (err) {
+                    error.textContent = err.message || "Unable to unlock this exam.";
+                    input.select();
+                } finally {
+                    button.disabled = false;
+                    button.textContent = "Unlock Exam";
+                }
+            });
+            input.focus();
+        }
+
+
+        function renderExam(exam) {
+
+            const questions =
+                exam.questions || [];
+
+
+            if (questions.length === 0) {
+
+                showError(
+                    "This exam does not contain any questions."
+                );
+
+                return;
+            }
+
+
+            examContent.innerHTML = `
+
+                <div class="exam-timer" id="examTimer" role="status" aria-live="polite">
+                    <div>
+                        <strong>Time remaining</strong>
+                        <div class="exam-timer-status" id="examTimerStatus">Your answers save automatically.</div>
+                    </div>
+                    <div class="exam-timer-value" id="examTimerValue">--:--:--</div>
+                </div>
+
+                <div class="exam-header">
+
+                    <p class="eyebrow">
+                        TEACHER ASSIGNED EXAM
+                    </p>
+
+                    <h1>
+                        ${escapeHtml(exam.title)}
+                    </h1>
+
+                    <p>
+                        ${escapeHtml(
+                            exam.description ||
+                            "Complete all questions and submit your exam."
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>
+                            ${questions.length}
+                        </strong>
+                        question(s)
+                    </p>
+
+                </div>
+
+
+                <form id="examForm">
+
+                    ${questions.map((question, index) => `
+
+                        <article class="exam-question">
+
+                            <h3>
+                                ${index + 1}.
+                                ${escapeHtml(question.question)}
+                            </h3>
+
+
+                            <div>
+
+                                ${
+                                    question.question_type === "fill_blank"
+                                    ? `
+                                        <label class="exam-option" style="display:block;">
+                                            <span style="display:block; margin-bottom:8px;">Your answer</span>
+                                            <input
+                                                type="text"
+                                                name="question-${question.id}"
+                                                maxlength="1000"
+                                                autocomplete="off"
+                                                placeholder="Type your answer..."
+                                                value="${escapeHtml((exam.saved_answers || {})[String(question.id)] ?? "")}"
+                                                style="width:100%; box-sizing:border-box; padding:12px; border-radius:10px;"
+                                            >
+                                        </label>
+                                    `
+                                    : (question.options || [])
+                                        .map((option, optionIndex) => `
+                                            <label class="exam-option">
+                                                <input
+                                                    type="radio"
+                                                    name="question-${question.id}"
+                                                    value="${optionIndex}"
+                                                    ${(exam.saved_answers || {})[String(question.id)] !== undefined && Number((exam.saved_answers || {})[String(question.id)]) === optionIndex ? "checked" : ""}
+                                                >
+                                                ${escapeHtml(option)}
+                                            </label>
+                                        `)
+                                        .join("")
+                                }
+
+                            </div>
+
+                        </article>
+
+                    `).join("")}
+
+
+                    <button
+                        type="submit"
+                        class="primary-button exam-submit"
+                    >
+                        Submit Exam
+                    </button>
+
+                </form>
+            `;
+
+
+            const form = document.getElementById("examForm");
+            examFormReference = form;
+            form.addEventListener("input", scheduleExamAutosave);
+            form.addEventListener("change", scheduleExamAutosave);
+            form.addEventListener("submit", submitExam);
+        }
+
+
+        function collectExamAnswers() {
+            const form = examFormReference || document.getElementById("examForm");
+            if (!form) return {};
+
+            const inputs = Array.from(
+                form.querySelectorAll('input[name^="question-"]')
+            );
+            const names = new Set(inputs.map(input => input.name));
+            const answers = {};
+
+            for (const name of names) {
+                const group = inputs.filter(input => input.name === name);
+                const questionId = name.slice("question-".length);
+                const textInput = group.find(input => input.type === "text");
+
+                if (textInput) {
+                    const value = textInput.value.trim();
+                    if (value) answers[questionId] = value;
+                } else {
+                    const selected = group.find(
+                        input => input.type === "radio" && input.checked
+                    );
+                    if (selected) answers[questionId] = Number(selected.value);
+                }
+            }
+
+            return answers;
+        }
+
+
+        async function saveExamAnswers(options = {}) {
+            const allowExpired = options.allowExpired === true;
+
+            if (!examId || examSubmitInFlight || (examIsExpired && !allowExpired)) {
+                return false;
+            }
+
+            // Capture each complete snapshot now, then send snapshots in order.
+            const answers = collectExamAnswers();
+
+            const saveOperation = async () => {
+                if (examSubmitInFlight) return false;
+
+                examAutosaveInFlight = true;
+                try {
+                    const response = await fetch(
+                        `/api/student/exams/${encodeURIComponent(examId)}/session`,
+                        {
+                            method: "POST",
+                            credentials: "include",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ answers })
+                        }
+                    );
+
+                    if (response.status === 401) {
+                        window.location.href = "/login.html";
+                        return false;
+                    }
+
+                    if (response.status === 409) {
+                        examIsExpired = true;
+                        return false;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Could not autosave answers.");
+                    }
+
+                    const status = document.getElementById("examTimerStatus");
+                    if (status && !examIsExpired) {
+                        status.textContent = "All answers saved.";
+                    }
+                    return true;
+                } catch (error) {
+                    console.error("Exam autosave failed:", error);
+                    const status = document.getElementById("examTimerStatus");
+                    if (status) status.textContent = "Save pending. Keep this page open.";
+                    return false;
+                } finally {
+                    examAutosaveInFlight = false;
+                }
+            };
+
+            const operation = examAutosaveQueue.catch(() => false).then(saveOperation);
+            examAutosaveQueue = operation;
+
+            const saved = await operation;
+
+            // A server-side expiry can arrive before the browser countdown reaches zero.
+            // Wait until this queued save settles, then trigger the same guarded submission.
+            if (
+                !saved &&
+                examIsExpired &&
+                !examSubmitInFlight &&
+                !examSubmitWaiting
+            ) {
+                await submitExam(null, true);
+            }
+
+            return saved;
+        }
+
+
+        function scheduleExamAutosave() {
+            if (examIsExpired || examSubmitInFlight) return;
+            if (examSaveDebounce) clearTimeout(examSaveDebounce);
+            examSaveDebounce = setTimeout(() => {
+                saveExamAnswers();
+            }, 350);
+        }
+
+
+        function startExamAutosave() {
+            if (examAutosaveInterval) clearInterval(examAutosaveInterval);
+            examAutosaveInterval = setInterval(() => {
+                saveExamAnswers();
+            }, 5000);
+        }
+
+
+        function startExamTimer() {
+            if (examTimerInterval) clearInterval(examTimerInterval);
+
+            const updateTimer = () => {
+                if (!examExpiresAt) return;
+
+                const remaining = Math.max(0, examExpiresAt - Date.now());
+                const totalSeconds = Math.ceil(remaining / 1000);
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+
+                const value = document.getElementById("examTimerValue");
+                const banner = document.getElementById("examTimer");
+                const status = document.getElementById("examTimerStatus");
+
+                if (value) {
+                    value.textContent =
+                        `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+                }
+
+                if (banner) banner.classList.toggle("expiring", remaining <= 60000);
+                if (status && remaining > 60000) status.textContent = "Your answers save automatically.";
+
+                if (remaining <= 0 && !examSubmitInFlight && !examIsExpired) {
+                    examIsExpired = true;
+                    clearInterval(examTimerInterval);
+                    if (status) status.textContent = "Time is up. Submitting saved answers...";
+                    submitExam(null, true);
+                }
+            };
+
+            updateTimer();
+            examTimerInterval = setInterval(updateTimer, 250);
+        }
+
+
+        async function submitExam(event, automatic = false) {
+            if (event) event.preventDefault();
+            if (examSubmitInFlight || examSubmitWaiting) return;
+
+            if (!automatic && examExpiresAt && Date.now() >= examExpiresAt) {
+                examIsExpired = true;
+                automatic = true;
+            }
+
+            const form = examFormReference || document.getElementById("examForm");
+            if (!form) return;
+
+            const answers = collectExamAnswers();
+
+            if (!automatic) {
+                const inputs = Array.from(
+                    form.querySelectorAll('input[name^="question-"]')
+                );
+                const questionCount = new Set(inputs.map(input => input.name)).size;
+
+                if (Object.keys(answers).length !== questionCount) {
+                    alert("Please answer every question before submitting.");
+                    return;
+                }
+
+                // Save the latest answers before submitting, unless expiry takes over.
+                await saveExamAnswers();
+
+                // Expiry may have started automatic submission while this save was pending.
+                if (examSubmitInFlight || examSubmitWaiting) return;
+
+                if (examExpiresAt && Date.now() >= examExpiresAt) {
+                    examIsExpired = true;
+                    automatic = true;
+                }
+            }
+
+            // Let queued saves finish before automatic submission reads the server snapshot.
+            if (automatic) {
+                examSubmitWaiting = true;
+                try {
+                    await examAutosaveQueue;
+                } catch (error) {
+                    console.error("Waiting for exam autosaves failed:", error);
+                }
+
+                if (examSubmitInFlight) {
+                    examSubmitWaiting = false;
+                    return;
+                }
+                examSubmitWaiting = false;
+            }
+
+            const submitButton = form.querySelector('button[type="submit"]');
+
+            examSubmitInFlight = true;
+            examMonitoringActive = false;
+
+            if (examTimerInterval) clearInterval(examTimerInterval);
+            if (examAutosaveInterval) clearInterval(examAutosaveInterval);
+            if (examSaveDebounce) clearTimeout(examSaveDebounce);
+
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = automatic
+                    ? "Time is up. Submitting..."
+                    : "Submitting...";
+            }
+
+            const timerStatus = document.getElementById("examTimerStatus");
+            if (timerStatus && automatic) {
+                timerStatus.textContent = "Time is up. Submitting saved answers...";
+            }
+
+            try {
+                const response = await fetch(
+                    `/api/student/exams/${encodeURIComponent(examId)}/submit`,
+                    {
+                        method: "POST",
+                        credentials: "include",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            answers,
+                            auto_submit: automatic
+                        })
+                    }
+                );
+
+                if (response.status === 401) {
+                    window.location.href = "/login.html";
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || "Failed to submit exam.");
+                }
+
+                const result = data.result || data;
+                showResult(
+                    result.score,
+                    result.total_questions,
+                    result.percentage,
+                    result.score_released
+                );
+            } catch (error) {
+                console.error("Exam submission failed:", error);
+
+                if (!automatic) {
+                    alert(error.message);
+                }
+
+                examSubmitInFlight = false;
+
+                if (!examIsExpired) {
+                    examMonitoringActive = true;
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.textContent = "Submit Exam";
+                    }
+                }
+
+                if (automatic) {
+                    const status = document.getElementById("examTimerStatus");
+                    if (status) status.textContent = "Submission failed. Retrying...";
+                    setTimeout(() => submitExam(null, true), 2000);
+                }
+            }
+        }
+
+
+        function showResult(
+            score,
+            totalQuestions,
+            percentage,
+            scoreReleased = false
+        ) {
+
+            const resultContent = scoreReleased
+                ? `
+                    <div class="exam-result-score">
+                        ${score}/${totalQuestions}
+                    </div>
+
+                    <p>
+                        Your score:
+                        <strong>
+                            ${percentage}%
+                        </strong>
+                    </p>
+                `
+                : `
+                    <div class="exam-result-score">
+                        🔒
+                    </div>
+
+                    <p>
+                        Your exam has been submitted successfully.
+                    </p>
+
+                    <p>
+                        Your teacher will release your score
+                        when the result is ready.
+                    </p>
+                `;
+
+            examContent.innerHTML = `
+
+                <div class="exam-result">
+
+                    <p class="eyebrow">
+                        EXAM COMPLETED
+                    </p>
+
+                    <h1>
+                        ${escapeHtml(
+                            "Exam Submitted"
+                        )}
+                    </h1>
+
+                    ${resultContent}
+
+                    <br>
+
+                    <a
+                        href="/exams.html"
+                        class="primary-button"
+                    >
+                        Back to Exams
+                    </a>
+
+                    <a
+                        href="/dashboard.html"
+                        class="topbar-link"
+                        style="margin-left: 16px;"
+                    >
+                        Dashboard
+                    </a>
+
+                </div>
+            `;
+        }
+
+
+        loadExam();
+
+    </script>
+
+</body>
+</html>

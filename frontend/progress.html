@@ -5,10 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Progress - AI STUDY ASSISTANT</title>
+    <title>Progress - KANIA.AI</title>
 
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/mobile.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
 </head>
 
 <body>
@@ -16,8 +17,8 @@
     <aside class="sidebar">
 
         <div class="logo">
-            <div class="logo-icon">AI</div>
-            <span>AI STUDY ASSISTANT</span>
+            <div class="logo-icon"><img src="/icons/logo-master.png" alt="KANIA.AI"></div>
+            <span>KANIA.AI</span>
         </div>
 
         <nav>
@@ -35,6 +36,11 @@
             <a href="/quiz.html" class="nav-item">
                 <span>?</span>
                 Quizzes
+            </a>
+
+            <a href="/exams.html" class="nav-item">
+                <span>📝</span>
+                Exams
             </a>
 
             <a href="/progress.html" class="nav-item active">
@@ -195,6 +201,91 @@
         </section>
 
 
+        <!-- GRADE BAR -->
+
+        <section class="section progress-section grade-bar-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        RELEASED EXAM RESULTS
+                    </span>
+
+                    <h2>Grade Bar</h2>
+
+                    <p>
+                        Your released exam grades appear here.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div id="gradeBar">
+
+                <div class="progress-empty-card">
+
+                    <div class="empty-icon">📝</div>
+
+                    <h3>No released exam grades yet</h3>
+
+                    <p>
+                        Your exam grade will appear here when your teacher releases it.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- AI STUDY FOCUS -->
+
+        <section class="section progress-section ai-study-focus-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        PERSONALIZED AI GUIDANCE
+                    </span>
+
+                    <h2>Your AI Study Focus</h2>
+
+                    <p>
+                        Based on your quiz performance, here's what you should focus on next.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div id="studyFocus">
+
+                <div class="progress-empty-card">
+
+                    <div class="empty-icon">✦</div>
+
+                    <h3>Analyzing your progress...</h3>
+
+                    <p>
+                        Complete a quiz to receive a personalized study focus.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
         <!-- TOPIC PERFORMANCE -->
 
         <section class="section progress-section">
@@ -322,7 +413,8 @@
     </main>
 
 
-    <script src="/js/progress.js"></script>
+        <script src="/js/auth.js"></script>
+<script src="/js/progress.js"></script>
 
 <script src="/js/profile.js"></script>
     <script src="/js/mobile.js"></script>

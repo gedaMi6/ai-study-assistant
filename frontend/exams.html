@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exams | KANIA.AI</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/mobile.css">
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">
+                <img src="/icons/logo-master.png" alt="KANIA.AI">
+            </div>
+            <span>KANIA.AI</span>
+        </div>
+
+        <nav>
+
+            <a href="/app" class="nav-item">
+                <span>⌂</span>
+                Dashboard
+            </a>
+
+            <a href="/chat.html" class="nav-item">
+                <span>◉</span>
+                AI Chat
+            </a>
+
+            <a href="/quiz.html" class="nav-item">
+                <span>?</span>
+                Quizzes
+            </a>
+
+            <a href="/exams.html" class="nav-item active">
+                <span>📝</span>
+                Exams
+            </a>
+
+            <a href="/progress.html" class="nav-item">
+                <span>↗</span>
+                Progress
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                System Online
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar dashboard-topbar">
+
+            <div>
+
+                <span class="eyebrow">
+                    KANIA.AI STUDY WORKSPACE
+                </span>
+
+                <h1>
+                    Exams
+                </h1>
+
+                <p>
+                    Complete exams assigned to you by your teacher.
+                </p>
+
+            </div>
+
+        </header>
+
+
+        <section class="section">
+
+            <div id="examMessage" style="display:none;"></div>
+
+            <div id="examList">
+
+                <div class="dashboard-loading-card">
+                    <div class="dashboard-loading-dot"></div>
+                    <span>Loading your exams...</span>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+        <script src="/js/auth.js"></script>
+<script src="/js/app.js"></script>
+    <script src="/js/profile.js"></script>
+    <script src="/js/mobile.js"></script>
+
+    <script>
+        const examList = document.getElementById("examList");
+        const examMessage = document.getElementById("examMessage");
+
+
+        function escapeHtml(value) {
+            const div = document.createElement("div");
+            div.textContent = value ?? "";
+            return div.innerHTML;
+        }
+
+
+        function showMessage(message, type = "info") {
+            examMessage.style.display = "block";
+            examMessage.textContent = message;
+            examMessage.dataset.type = type;
+        }
+
+
+        function formatStatus(exam) {
+            if (exam.completed) {
+                if (exam.score_released) {
+                    return `
+                        <span>
+                            🔓 Released · ${exam.score}/${exam.total_questions}
+                        </span>
+                    `;
+                }
+
+                return `
+                    <span>
+                        🔒 Pending release
+                    </span>
+                `;
+            }
+
+            return `
+                <span>
+                    Not completed
+                </span>
+            `;
+        }
+
+
+        function renderExams(exams) {
+
+            if (!exams || exams.length === 0) {
+
+                examList.innerHTML = `
+                    <div class="dashboard-loading-card">
+                        <h3>No exams yet</h3>
+
+                        <p>
+                            Your teacher has not assigned any exams to you yet.
+                        </p>
+
+                        <a href="/dashboard.html">
+                            Back to Dashboard →
+                        </a>
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            examList.innerHTML = exams.map(exam => {
+
+                const completed = Boolean(exam.completed);
+
+                return `
+                    <article class="dashboard-action-card">
+
+                        <div class="dashboard-action-icon">
+                            ${completed ? "✓" : "📝"}
+                        </div>
+
+                        <div style="flex:1;">
+
+                            <h3>
+                                ${escapeHtml(exam.title)}
+                            </h3>
+
+                            <p>
+                                ${escapeHtml(
+                                    exam.description ||
+                                    "Teacher-assigned examination."
+                                )}
+                            </p>
+
+                            <p>
+                                ${exam.total_questions ?? 0} question(s)
+                            </p>
+
+                            ${formatStatus(exam)}
+
+                            ${
+                                completed
+                                ? (
+                                    exam.score_released
+                                    ? `
+                                        <span>
+                                            Score: ${exam.percentage}%
+                                        </span>
+                                    `
+                                    : `
+                                        <span>
+                                            🔒 Score hidden until teacher releases it
+                                        </span>
+                                    `
+                                )
+                                : `
+                                    <button
+                                        type="button"
+                                        class="primary-button"
+                                        onclick="openExam('${exam.id}')"
+                                    >
+                                        Start Exam →
+                                    </button>
+                                `
+                            }
+
+                        </div>
+
+                    </article>
+                `;
+
+            }).join("");
+        }
+
+
+        async function loadExams() {
+
+            try {
+
+                const response = await fetch("/api/student/exams", {
+                    method: "GET",
+                    credentials: "include"
+                });
+
+
+                if (response.status === 401) {
+                    window.location.href = "/login.html";
+                    return;
+                }
+
+
+                if (!response.ok) {
+                    throw new Error("Failed to load exams.");
+                }
+
+
+                const data = await response.json();
+
+                renderExams(data.exams || []);
+
+            } catch (error) {
+
+                console.error(error);
+
+                examList.innerHTML = "";
+
+                showMessage(
+                    "Unable to load your exams. Please try again.",
+                    "error"
+                );
+            }
+        }
+
+
+        function openExam(examId) {
+
+            window.location.href =
+                `/exam.html?id=${encodeURIComponent(examId)}`;
+
+        }
+
+
+        loadExams();
+    </script>
+
+</body>
+</html>

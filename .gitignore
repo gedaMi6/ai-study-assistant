@@ -37,3 +37,16 @@ Thumbs.db
 # Local deployment/archive files
 ai-study-assistant-source.zip
 cloudflared.deb
+
+# Local backups and temporary source copies
+/backups/
+*.bak
+*.bak[0-9]*
+*.backup_*
+*.before-*
+*.before_*
+
+# Local database files and backups
+data/*.db*
+data/*.sqlite*
+data/profile_images/

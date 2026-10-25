@@ -18,6 +18,7 @@ router = APIRouter(
 class QuizRequest(BaseModel):
     document_id: str
     question_count: int = 5
+    topic: str | None = None
 
 
 class QuizAnswer(BaseModel):
@@ -124,7 +125,8 @@ def generate_quiz_endpoint(
             context=context,
             question_count=request.question_count,
             previous_questions=previous_questions,
-            generation_nonce=str(uuid.uuid4())
+            generation_nonce=str(uuid.uuid4()),
+            focus_topic=request.topic
         )
 
     except GeminiQuotaError as e:
@@ -242,7 +244,13 @@ def submit_quiz(
 
             raise HTTPException(
                 status_code=403,
-                detail="You are not allowed to submit this quize."
+                detail="You are not allowed to submit this quiz."
+            )
+
+        if quiz_row["submitted_at"] is not None:
+            raise HTTPException(
+                status_code=400,
+                detail="This quiz has already been submitted."
             )
 
         try:

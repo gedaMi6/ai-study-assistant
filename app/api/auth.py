@@ -22,6 +22,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 SESSION_COOKIE = "study_assistant_session"
+COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").lower() == "true"
 
 
 class RegisterRequest(BaseModel):
@@ -33,6 +34,7 @@ class RegisterRequest(BaseModel):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+    role: str = "student"
 
 
 class ForgotPasswordRequest(BaseModel):
@@ -48,6 +50,21 @@ class ResetPasswordRequest(BaseModel):
     email: EmailStr
     code: str
     new_password: str
+
+
+class RegisterSendCodeRequest(BaseModel):
+    name: str
+    email: EmailStr
+
+
+class RegisterVerifyCodeRequest(BaseModel):
+    email: EmailStr
+    code: str
+
+
+class RegisterCompleteRequest(BaseModel):
+    email: EmailStr
+    password: str
 
 
 def hash_password(password: str) -> str:
@@ -116,10 +133,10 @@ async def send_password_reset_email(
 
     message["From"] = smtp_username
     message["To"] = email
-    message["Subject"] = "AI STUDY ASSISTANT Password Reset Code"
+    message["Subject"] = "KANIA.AI Password Reset Code"
 
     message.set_content(
-        f"""AI STUDY ASSISTANT Password Reset
+        f"""KANIA.AI Password Reset
 
 Your password reset code is:
 
@@ -129,18 +146,85 @@ This code expires in 15 minutes.
 
 If you did not request a password reset, you can safely ignore this email.
 
-AI STUDY ASSISTANT
+KANIA.AI
 """
     )
 
-    await aiosmtplib.send(
-        message,
+    smtp = aiosmtplib.SMTP(
         hostname=smtp_host,
         port=smtp_port,
-        use_tls=True,
-        username=smtp_username,
-        password=smtp_password,
+        timeout=20,
+        start_tls=(smtp_port == 587),
+        use_tls=(smtp_port == 465),
     )
+
+    await smtp.connect()
+
+    await smtp.login(
+        smtp_username,
+        smtp_password,
+    )
+
+    await smtp.send_message(message)
+
+    await smtp.quit()
+
+
+
+async def send_registration_verification_email(
+    email: str,
+    code: str
+):
+    smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
+    smtp_port = int(os.getenv("SMTP_PORT", "587"))
+    smtp_username = os.getenv("SMTP_USERNAME")
+    smtp_password = os.getenv("SMTP_PASSWORD")
+
+    if not smtp_username or not smtp_password:
+        raise RuntimeError(
+            "SMTP_USERNAME and SMTP_PASSWORD are not configured."
+        )
+
+    message = EmailMessage()
+
+    message["From"] = smtp_username
+    message["To"] = email
+    message["Subject"] = "KANIA.AI Email Verification Code"
+
+    message.set_content(
+        f"""KANIA.AI Email Verification
+
+Your email verification code is:
+
+{code}
+
+This code expires in 15 minutes.
+
+If you did not try to create a KANIA.AI account,
+you can safely ignore this email.
+
+KANIA.AI
+"""
+    )
+
+    smtp = aiosmtplib.SMTP(
+        hostname=smtp_host,
+        port=smtp_port,
+        timeout=20,
+        start_tls=(smtp_port == 587),
+        use_tls=(smtp_port == 465),
+    )
+
+    await smtp.connect()
+
+    await smtp.login(
+        smtp_username,
+        smtp_password,
+    )
+
+    await smtp.send_message(message)
+
+    await smtp.quit()
 
 
 def get_valid_reset_token(
@@ -149,41 +233,41 @@ def get_valid_reset_token(
 ):
     connection = get_connection()
 
-    user = connection.execute(
-        """
-        SELECT id, email
-        FROM users
-        WHERE email = ?
-        """,
-        (email,),
-    ).fetchone()
+    try:
+        code_hash = hash_reset_code(code)
 
-    if not user:
+        row = connection.execute(
+            """
+            SELECT
+                users.id AS user_id,
+                users.email AS user_email,
+                password_reset_tokens.id AS token_id
+            FROM users
+            JOIN password_reset_tokens
+              ON password_reset_tokens.user_id = users.id
+            WHERE lower(users.email) = ?
+              AND password_reset_tokens.token_hash = ?
+              AND password_reset_tokens.used = 0
+              AND password_reset_tokens.expires_at > CURRENT_TIMESTAMP
+            ORDER BY password_reset_tokens.id DESC
+            LIMIT 1
+            """,
+            (email.strip().lower(), code_hash),
+        ).fetchone()
+
+        if not row:
+            return None, None
+
+        user = {
+            "id": row["user_id"],
+            "email": row["user_email"],
+        }
+        token = {"id": row["token_id"]}
+
+        return user, token
+
+    finally:
         connection.close()
-        return None, None
-
-    code_hash = hash_reset_code(code)
-
-    token = connection.execute(
-        """
-        SELECT id
-        FROM password_reset_tokens
-        WHERE user_id = ?
-          AND token_hash = ?
-          AND used = 0
-          AND expires_at > CURRENT_TIMESTAMP
-        ORDER BY id DESC
-        LIMIT 1
-        """,
-        (
-            user["id"],
-            code_hash,
-        ),
-    ).fetchone()
-
-    connection.close()
-
-    return user, token
 
 
 @router.post("/forgot-password")
@@ -374,7 +458,12 @@ def reset_password(
 
 
 def get_current_user(request: Request):
-    session_id = request.cookies.get(SESSION_COOKIE)
+    # Prefer the tab-specific session header when present.
+    # Fall back to the shared cookie for backward compatibility.
+    session_id = request.headers.get("X-Study-Session")
+
+    if not session_id:
+        session_id = request.cookies.get(SESSION_COOKIE)
 
     if not session_id:
         return None
@@ -402,18 +491,171 @@ def get_current_user(request: Request):
     return user
 
 
-@router.post("/register")
-def register(data: RegisterRequest, response: Response):
-
+@router.post("/register/send-code")
+async def register_send_code(data: RegisterSendCodeRequest):
     name = data.name.strip()
     email = data.email.strip().lower()
-    password = data.password
 
     if len(name) < 2:
         raise HTTPException(
             status_code=400,
             detail="Name must contain at least 2 characters."
         )
+
+    connection = get_connection()
+
+    existing = connection.execute(
+        "SELECT id FROM users WHERE email = ?",
+        (email,),
+    ).fetchone()
+
+    if existing:
+        connection.close()
+        raise HTTPException(
+            status_code=400,
+            detail="An account with this email already exists."
+        )
+
+    code = f"{secrets.randbelow(1_000_000):06d}"
+    code_hash = hash_reset_code(code)
+
+    expires_at = (
+        datetime.now(timezone.utc) + timedelta(minutes=15)
+    ).strftime("%Y-%m-%d %H:%M:%S")
+
+    connection.execute(
+        """
+        DELETE FROM email_verification_tokens
+        WHERE email = ?
+        """,
+        (email,),
+    )
+
+    connection.execute(
+        """
+        INSERT INTO email_verification_tokens (
+            name,
+            email,
+            code_hash,
+            expires_at,
+            verified
+        )
+        VALUES (?, ?, ?, ?, 0)
+        """,
+        (
+            name,
+            email,
+            code_hash,
+            expires_at,
+        ),
+    )
+
+    connection.commit()
+    connection.close()
+
+    try:
+        await send_registration_verification_email(
+            email,
+            code
+        )
+    except Exception as error:
+        print(
+            "Registration verification email error:",
+            error
+        )
+
+        connection = get_connection()
+
+        connection.execute(
+            """
+            DELETE FROM email_verification_tokens
+            WHERE email = ?
+            """,
+            (email,),
+        )
+
+        connection.commit()
+        connection.close()
+
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to send verification email. Please try again."
+        )
+
+    return {
+        "status": "success",
+        "message": "Verification code sent to your email."
+    }
+
+
+@router.post("/register/verify-code")
+def register_verify_code(data: RegisterVerifyCodeRequest):
+    email = data.email.strip().lower()
+    code = data.code.strip()
+
+    if not code.isdigit() or len(code) != 6:
+        raise HTTPException(
+            status_code=400,
+            detail="Enter the 6-digit verification code."
+        )
+
+    connection = get_connection()
+
+    token = connection.execute(
+        """
+        SELECT id, code_hash
+        FROM email_verification_tokens
+        WHERE email = ?
+          AND verified = 0
+          AND expires_at > CURRENT_TIMESTAMP
+        ORDER BY id DESC
+        LIMIT 1
+        """,
+        (email,),
+    ).fetchone()
+
+    if not token:
+        connection.close()
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or expired verification code."
+        )
+
+    if not hmac.compare_digest(
+        token["code_hash"],
+        hash_reset_code(code)
+    ):
+        connection.close()
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or expired verification code."
+        )
+
+    connection.execute(
+        """
+        UPDATE email_verification_tokens
+        SET verified = 1
+        WHERE id = ?
+        """,
+        (token["id"],),
+    )
+
+    connection.commit()
+    connection.close()
+
+    return {
+        "status": "success",
+        "message": "Email verified successfully."
+    }
+
+
+@router.post("/register/complete")
+def register_complete(
+    data: RegisterCompleteRequest,
+    response: Response
+):
+    email = data.email.strip().lower()
+    password = data.password
 
     if len(password) < 8:
         raise HTTPException(
@@ -430,10 +672,29 @@ def register(data: RegisterRequest, response: Response):
 
     if existing:
         connection.close()
-
         raise HTTPException(
             status_code=400,
             detail="An account with this email already exists."
+        )
+
+    verification = connection.execute(
+        """
+        SELECT id, name
+        FROM email_verification_tokens
+        WHERE email = ?
+          AND verified = 1
+          AND expires_at > CURRENT_TIMESTAMP
+        ORDER BY id DESC
+        LIMIT 1
+        """,
+        (email,),
+    ).fetchone()
+
+    if not verification:
+        connection.close()
+        raise HTTPException(
+            status_code=400,
+            detail="Please verify your email before creating your account."
         )
 
     password_hash = hash_password(password)
@@ -448,7 +709,7 @@ def register(data: RegisterRequest, response: Response):
         VALUES (?, ?, ?)
         """,
         (
-            name,
+            verification["name"],
             email,
             password_hash,
         ),
@@ -472,6 +733,14 @@ def register(data: RegisterRequest, response: Response):
         ),
     )
 
+    connection.execute(
+        """
+        DELETE FROM email_verification_tokens
+        WHERE id = ?
+        """,
+        (verification["id"],),
+    )
+
     connection.commit()
     connection.close()
 
@@ -480,7 +749,7 @@ def register(data: RegisterRequest, response: Response):
         value=session_id,
         httponly=True,
         samesite="lax",
-        secure=False,
+        secure=COOKIE_SECURE,
         max_age=60 * 60 * 24 * 30,
     )
 
@@ -489,10 +758,11 @@ def register(data: RegisterRequest, response: Response):
         "message": "Account created successfully.",
         "user": {
             "id": user_id,
-            "name": name,
+            "name": verification["name"],
             "email": email,
         },
     }
+
 
 @router.post("/login")
 def login(data: LoginRequest, response: Response):
@@ -513,8 +783,9 @@ def login(data: LoginRequest, response: Response):
             sidebar_collapsed
         FROM users
         WHERE email = ?
+          AND role = ?
         """,
-        (email,),
+        (email, data.role.strip().lower()),
     ).fetchone()
 
     if not user:
@@ -560,13 +831,14 @@ def login(data: LoginRequest, response: Response):
         value=session_id,
         httponly=True,
         samesite="lax",
-        secure=False,
+        secure=COOKIE_SECURE,
         max_age=60 * 60 * 24 * 30,
     )
 
     return {
         "status": "success",
         "message": "Login successful.",
+        "session_id": session_id,
         "user": {
             "id": user["id"],
             "name": user["name"],
@@ -585,7 +857,12 @@ def login(data: LoginRequest, response: Response):
 @router.post("/logout")
 def logout(request: Request, response: Response):
 
-    session_id = request.cookies.get(SESSION_COOKIE)
+    # Prefer the tab-specific session when available.
+    # Fall back to the shared cookie for backward compatibility.
+    session_id = request.headers.get("X-Study-Session")
+
+    if not session_id:
+        session_id = request.cookies.get(SESSION_COOKIE)
 
     if session_id:
         connection = get_connection()

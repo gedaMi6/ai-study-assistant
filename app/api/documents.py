@@ -1,7 +1,7 @@
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Request, Request
 from app.documents.processor import (
     extract_text_from_pdf,
     extract_text_from_pptx
@@ -10,6 +10,10 @@ from app.documents.chunker import chunk_text
 from app.database.database import get_connection, save_chunks
 from app.ai.vector_store import add_chunk, delete_document_chunks
 from app.ai.llm import generate_summary, GeminiQuotaError
+from app.api.auth import get_current_user
+from app.api.admin import require_admin
+from app.api.auth import get_current_user
+from app.api.admin import require_admin
 
 router = APIRouter(
     prefix="/documents",
@@ -23,7 +27,14 @@ UPLOAD_DIR = BASE_DIR / "data" / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 @router.get("")
-def list_documents():
+def list_documents(request: Request):
+    user = get_current_user(request)
+
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Not authenticated."
+        )
 
     connection = get_connection()
 
@@ -62,7 +73,11 @@ def list_documents():
 
 
 @router.post("/upload")
-async def upload_document(file: UploadFile = File(...)):
+async def upload_document(
+    request: Request,
+    file: UploadFile = File(...)
+):
+    require_admin(request)
 
     if not file.filename:
         raise HTTPException(
@@ -158,7 +173,11 @@ async def upload_document(file: UploadFile = File(...)):
         "message": "Document uploaded and processed successfully."
     }
 @router.delete("/{document_id}")
-def delete_document(document_id: str):
+def delete_document(
+    document_id: str,
+    request: Request
+):
+    require_admin(request)
 
     connection = get_connection()
 
@@ -220,7 +239,17 @@ def delete_document(document_id: str):
 
 
 @router.get("/{document_id}/summary")
-def summarize_document(document_id: str):
+def summarize_document(
+    document_id: str,
+    request: Request
+):
+    user = get_current_user(request)
+
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Not authenticated."
+        )
 
     connection = get_connection()
 

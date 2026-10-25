@@ -17,6 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const recentChatsList =
         document.getElementById("recentChatsList");
 
+    const chatHistoryToggle =
+        document.getElementById("chatHistoryToggle");
+
     // =========================================
     // Chat session
     // =========================================
@@ -129,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="message-avatar">AI</div>
 
                 <div class="message-content">
-                    <strong>AI STUDY ASSISTANT</strong>
+                    <strong>KANIA.AI</strong>
 
                     <div class="message-text">
                         <p>
@@ -203,7 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const name =
             type === "assistant"
-                ? "AI STUDY ASSISTANT"
+                ? "KANIA.AI"
                 : "You";
 
         let sourcesHtml = "";
@@ -306,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
             <div class="message-content">
-                <strong>AI STUDY ASSISTANT</strong>
+                <strong>KANIA.AI</strong>
 
                 <div class="ai-thinking-content">
                     <div
@@ -2172,6 +2175,46 @@ if (sidebarToggle) {
     );
 }
 
-loadSidebarPreference();
+    // =========================================
+    // Mobile chat history drawer
+    // =========================================
+
+    if (chatHistoryToggle && chatContainer) {
+        chatHistoryToggle.addEventListener(
+            "click",
+            () => {
+                if (window.innerWidth <= 650) {
+                    chatContainer.classList.remove(
+                        "sidebar-collapsed"
+                    );
+
+                    chatContainer.classList.toggle(
+                        "mobile-chat-history-open"
+                    );
+
+                    const isOpen =
+                        chatContainer.classList.contains(
+                            "mobile-chat-history-open"
+                        );
+
+                    chatHistoryToggle.setAttribute(
+                        "aria-label",
+                        isOpen
+                            ? "Close chat history"
+                            : "Open chat history"
+                    );
+
+                    chatHistoryToggle.setAttribute(
+                        "title",
+                        isOpen
+                            ? "Close chat history"
+                            : "Chat history"
+                    );
+                }
+            }
+        );
+    }
+
+    loadSidebarPreference();
 
 });

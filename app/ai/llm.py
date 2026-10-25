@@ -1,23 +1,67 @@
 import os
 import time
+import threading
 
 from dotenv import load_dotenv
 from google import genai
 
 load_dotenv()
 
-API_KEY = os.getenv("GEMINI_API_KEY")
+# Load up to 10 Gemini API keys.
+# KEY 1 is used first. When Gemini reports quota exhaustion,
+# the app automatically moves to the next available key.
+API_KEYS = [
+    os.getenv(f"GEMINI_API_KEY_{i}")
+    for i in range(1, 11)
+]
 
-if not API_KEY:
-    raise RuntimeError("GEMINI_API_KEY is not set")
+# Backward compatibility: if only GEMINI_API_KEY exists,
+# use it as key 1.
+if not API_KEYS[0]:
+    API_KEYS[0] = os.getenv("GEMINI_API_KEY")
 
-client = genai.Client(api_key=API_KEY)
+API_KEYS = [key for key in API_KEYS if key]
+
+if not API_KEYS:
+    raise RuntimeError("No GEMINI API keys are configured")
+
+_clients = [
+    genai.Client(api_key=key)
+    for key in API_KEYS
+]
+
+_current_key_index = 0
+_key_lock = threading.Lock()
 
 MODEL_NAME = "gemini-3.6-flash"
 
+
 class GeminiQuotaError(Exception):
-    """Raised when the Gemini API quota has been exhausted."""
+    """Raised when all configured Gemini API keys are exhausted."""
     pass
+
+
+def _get_current_client():
+    with _key_lock:
+        return _clients[_current_key_index]
+
+
+def _switch_to_next_key():
+    global _current_key_index
+
+    with _key_lock:
+        if _current_key_index >= len(_clients) - 1:
+            return False
+
+        _current_key_index += 1
+
+        print(
+            f"Gemini API key quota exhausted. "
+            f"Switching to API key "
+            f"{_current_key_index + 1}/{len(_clients)}."
+        )
+
+        return True
 
 def generate_answer(
     question: str,
@@ -39,7 +83,7 @@ def generate_answer(
                 history_text += f"{role}: {content}\n"
 
     prompt = f"""
-You are an AI Study Assistant.
+You are KANIA.AI.
 
 Answer the student's question using the provided study material.
 
@@ -71,7 +115,7 @@ ANSWER:
 def generate_summary(text: str) -> str:
 
     prompt = f"""
-You are an AI Study Assistant.
+You are KANIA.AI.
 
 Create a clear and useful study summary of the following study material.
 
@@ -94,13 +138,16 @@ SUMMARY:
 
 
 def _generate_with_retry(prompt: str) -> str:
+    """Generate content with automatic Gemini API key rotation."""
 
     max_retries = 3
     base_delay = 5
 
     for attempt in range(max_retries):
         try:
-            response = client.models.generate_content(
+            current_client = _get_current_client()
+
+            response = current_client.models.generate_content(
                 model=MODEL_NAME,
                 contents=prompt,
             )
@@ -111,38 +158,57 @@ def _generate_with_retry(prompt: str) -> str:
             error_code = getattr(e, "code", None)
             error_message = str(e)
 
-            # Quota exhausted: do NOT retry.
+            # Quota exhausted: switch to the next API key.
             if error_code == 429 and (
                 "RESOURCE_EXHAUSTED" in error_message
                 or "quota" in error_message.lower()
                 or "free_tier" in error_message.lower()
             ):
+                switched = _switch_to_next_key()
+
+                if switched:
+                    print("Retrying request with the next Gemini API key.")
+                    continue
+
                 print(
-                    "Gemini API quota exhausted. "
-                    "No retry will be attempted."
+                    "Gemini API quota exhausted on all configured API keys."
                 )
+
                 raise GeminiQuotaError(
-                   "Gemini API quota has been exhausted."
+                    "Gemini API quota has been exhausted on all configured API keys."
                 ) from e
 
-            # Temporary rate limit or service outage: retry.
-            if error_code in (429, 503) and attempt < max_retries - 1:
-                delay = base_delay * (2 ** attempt)
+            # Temporary Gemini service outage:
+            # try another configured key first, then retry with backoff.
+            if error_code == 503:
+                switched = _switch_to_next_key()
 
-                print(
-                    f"Gemini temporarily unavailable "
-                    f"(HTTP {error_code}). "
-                    f"Retrying in {delay} seconds..."
-                )
+                if switched:
+                    print(
+                        "Gemini temporarily unavailable. "
+                        "Switching to the next API key."
+                    )
+                    continue
 
-                time.sleep(delay)
-            else:
-                raise
+                if attempt < max_retries - 1:
+                    delay = base_delay * (2 ** attempt)
+
+                    print(
+                        f"Gemini temporarily unavailable (HTTP {error_code}). "
+                        f"Retrying in {delay} seconds..."
+                    )
+
+                    time.sleep(delay)
+                    continue
+
+            raise
+
 def generate_quiz(
     context: str,
     question_count: int = 5,
     previous_questions=None,
-    generation_nonce: str = ""
+    generation_nonce: str = "",
+    focus_topic: str | None = None
 ):
 
     if previous_questions is None:
@@ -156,11 +222,29 @@ def generate_quiz(
             for question in previous_questions
         )
 
+    focus_topic_instruction = ""
+
+    if focus_topic:
+        focus_topic_instruction = f"""
+FOCUS TOPIC:
+{focus_topic}
+
+This quiz is specifically for practicing the student's weak topic.
+
+Rules for the focus topic:
+- Generate ALL questions primarily about the focus topic.
+- Use related concepts from the study material when they help explain or test the focus topic.
+- Do not generate questions mainly about unrelated topics.
+- Make sure every question is directly supported by the provided study material.
+"""
+
     prompt = f"""
-You are an AI Study Assistant creating an educational quiz.
+You are KANIA.AI creating an educational quiz.
 
 Create exactly {question_count} multiple-choice questions
 from the provided study material.
+
+{focus_topic_instruction}
 
 This is a new quiz generation request.
 
@@ -333,6 +417,272 @@ def _parse_quiz_response(response_text: str):
 
 
     return cleaned_quiz
+
+def generate_study_recommendation(
+    topic: str,
+    performance: float,
+    study_material: str,
+    question_count: int = 0,
+    correct_count: int = 0
+):
+    """
+    Generate a personalized, study-material-grounded recommendation
+    for the student's weakest topic.
+    """
+
+    prompt = f"""
+You are KANIA.AI helping a student improve their exam performance.
+
+The student needs help with this topic:
+
+TOPIC:
+{topic}
+
+CURRENT PERFORMANCE:
+{performance}%
+
+QUESTIONS ANSWERED:
+{question_count}
+
+CORRECT ANSWERS:
+{correct_count}
+
+Use ONLY the provided study material.
+
+Your job is to create a practical study recommendation for this topic.
+
+Rules:
+- Base the recommendation directly on the study material.
+- Do not invent facts or concepts that are not present in the material.
+- Identify the most important concepts the student should review.
+- Focus on the student's weakness, not topics they already perform well on.
+- Give 3 to 5 specific things to study.
+- Give a clear reason why this topic should be the student's current focus.
+- Give one practical next step.
+- Keep the language clear and appropriate for a university student.
+- Do not give generic motivational advice.
+- Return ONLY valid JSON.
+- Do not use Markdown.
+- Do not include ```json or ```.
+
+Return exactly this structure:
+
+{{
+  "topic": "{topic}",
+  "performance": {performance},
+  "priority": "High",
+  "reason": "A short explanation of why this topic should currently be the student's focus.",
+  "what_to_study": [
+    "Specific concept to review",
+    "Specific concept to review",
+    "Specific concept to review"
+  ],
+  "next_step": "A clear action the student should take next."
+}}
+
+STUDY MATERIAL:
+{study_material}
+
+RECOMMENDATION:
+"""
+
+    response = _generate_with_retry(prompt)
+
+    return _parse_study_recommendation(response)
+
+
+def _parse_study_recommendation(response_text: str):
+    text = response_text.strip()
+
+    if text.startswith("```"):
+        lines = text.splitlines()
+
+        if lines and lines[0].startswith("```"):
+            lines = lines[1:]
+
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+
+        text = "\n".join(lines).strip()
+
+    try:
+        recommendation = json.loads(text)
+
+    except json.JSONDecodeError as e:
+        raise ValueError(
+            f"Gemini returned invalid recommendation JSON: {e}"
+        )
+
+    if not isinstance(recommendation, dict):
+        raise ValueError(
+            "Study recommendation response must be a JSON object."
+        )
+
+    required_fields = [
+        "topic",
+        "performance",
+        "priority",
+        "reason",
+        "what_to_study",
+        "next_step"
+    ]
+
+    if not all(
+        field in recommendation
+        for field in required_fields
+    ):
+        raise ValueError(
+            "Study recommendation is missing required fields."
+        )
+
+    what_to_study = recommendation["what_to_study"]
+
+    if not isinstance(what_to_study, list):
+        raise ValueError(
+            "what_to_study must be a list."
+        )
+
+    what_to_study = [
+        str(item).strip()
+        for item in what_to_study
+        if str(item).strip()
+    ]
+
+    if not what_to_study:
+        raise ValueError(
+            "Study recommendation contains no study topics."
+        )
+
+    try:
+        parsed_performance = float(
+            recommendation["performance"]
+        )
+    except (TypeError, ValueError):
+        raise ValueError(
+            "Study recommendation contains invalid performance."
+        )
+
+    return {
+        "topic": str(
+            recommendation["topic"]
+        ).strip(),
+
+        "performance": parsed_performance,
+
+        "priority": str(
+            recommendation["priority"]
+        ).strip(),
+
+        "reason": str(
+            recommendation["reason"]
+        ).strip(),
+
+        "what_to_study": what_to_study,
+
+        "next_step": str(
+            recommendation["next_step"]
+        ).strip()
+    }
+
+def generate_topic_review(
+    topic: str,
+    performance: float,
+    study_material: str
+):
+    """
+    Generate a complete review for a weak topic using
+    material retrieved from all relevant uploaded documents.
+    """
+
+    prompt = f"""
+You are KANIA.AI helping a university student
+review a topic they are struggling with.
+
+WEAK TOPIC:
+{topic}
+
+STUDENT PERFORMANCE:
+{performance}%
+
+The study material below was retrieved from the student's
+uploaded documents. It may contain material from multiple
+documents.
+
+STUDY MATERIAL:
+{study_material}
+
+Create a complete, structured study review for the student.
+
+Requirements:
+
+- Use ONLY the supplied study material.
+- Do not use outside knowledge.
+- Do not invent facts, numbers, examples, definitions,
+  terminology, or explanations.
+- Explain the topic from the beginning as if the student
+  is weak in this area.
+- Cover all important concepts from the retrieved material
+  that relate to the weak topic.
+- Combine overlapping information instead of repeating it.
+- Clearly explain important terms.
+- Include comparisons when the material contains comparisons.
+- Include examples only when supported by the material.
+- Highlight important facts the student should remember.
+- Point out relationships between related concepts.
+- Organize the review into clear sections.
+- End with a short "What to remember" section.
+- End with a practical "Next step" for studying this topic.
+- If the retrieved material is insufficient, explicitly say so.
+
+Return only the study review.
+"""
+
+    return _generate_with_retry(prompt)
+
+
+def generate_topic_detail(
+    topic: str,
+    study_point: str,
+    context: str
+):
+    """
+    Explain a selected study topic using only the supplied
+    uploaded-document context.
+    """
+
+    prompt = f"""
+You are KANIA.AI.
+
+The student selected this topic:
+{topic}
+
+The specific study point they want to understand is:
+{study_point}
+
+Use ONLY the study material provided below.
+
+STUDY MATERIAL:
+{context}
+
+Explain the selected study point clearly for a university student.
+
+Requirements:
+- Stay strictly grounded in the study material.
+- Define important concepts mentioned in the material.
+- If the topic involves a comparison, clearly compare the concepts.
+- Use simple examples only when they are supported by the material.
+- Do not invent facts, numbers, specifications, examples, or terminology.
+- Do not rely on outside knowledge.
+- If the material does not contain enough information, explicitly say that.
+- Organize the explanation with short paragraphs and bullet points when useful.
+- Focus specifically on what the student selected, not unrelated topics.
+
+Return only the explanation.
+"""
+
+    return _generate_with_retry(prompt)
+
+
 def rewrite_question(
     question: str,
     conversation_history=None
@@ -355,7 +705,7 @@ def rewrite_question(
         return question
 
     prompt = f"""
-You are a query rewriting assistant for an AI Study Assistant.
+You are a query rewriting assistant for KANIA.AI.
 
 Rewrite the student's current question into a clear, standalone
 search query that can be used to retrieve relevant study material.
@@ -381,3 +731,106 @@ STANDALONE SEARCH QUERY:
 """
 
     return _generate_with_retry(prompt).strip()
+
+
+def generate_flashcards(
+    context: str,
+    card_count: int = 10,
+    focus_topic: str | None = None,
+) -> list[dict]:
+    """Generate validated question-and-answer flashcards from study material."""
+    import json
+
+    card_count = max(1, min(int(card_count), 30))
+
+    topic_instruction = ""
+    if focus_topic:
+        topic_instruction = f"""
+Focus primarily on this topic: {focus_topic}
+Every card must remain grounded in the supplied study material.
+"""
+
+    prompt = f"""
+You are KANIA.AI, an educational flashcard generator.
+
+Create exactly {card_count} useful flashcards from the study material.
+
+{topic_instruction}
+
+Rules:
+- Use only facts supported by the supplied study material.
+- Each question must test one clear concept.
+- Answers must be accurate, concise, and useful for revision.
+- Avoid duplicate or nearly duplicate cards.
+- Include a short topic for every card.
+- Return only valid JSON, with no Markdown fences.
+
+Required JSON structure:
+[
+  {{
+    "question": "A clear study question",
+    "answer": "An accurate answer",
+    "topic": "Short topic name"
+  }}
+]
+
+STUDY MATERIAL:
+{context}
+
+FLASHCARDS:
+"""
+
+    response = _generate_with_retry(prompt).strip()
+
+    if response.startswith("```"):
+        lines = response.splitlines()
+        if lines and lines[0].strip().startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        response = "\n".join(lines).strip()
+
+    try:
+        parsed = json.loads(response)
+    except json.JSONDecodeError as exc:
+        raise ValueError("AI returned invalid flashcard JSON.") from exc
+
+    if not isinstance(parsed, list):
+        raise ValueError("AI flashcard response must be a JSON list.")
+
+    cards = []
+    seen = set()
+
+    for item in parsed:
+        if not isinstance(item, dict):
+            continue
+
+        question = item.get("question")
+        answer = item.get("answer")
+        topic = item.get("topic", "General")
+
+        if not isinstance(question, str) or not isinstance(answer, str):
+            continue
+
+        question = question.strip()
+        answer = answer.strip()
+        topic = str(topic).strip() or "General"
+
+        if not question or not answer:
+            continue
+
+        normalized = question.casefold()
+        if normalized in seen:
+            continue
+
+        seen.add(normalized)
+        cards.append({
+            "question": question,
+            "answer": answer,
+            "topic": topic,
+        })
+
+    if not cards:
+        raise ValueError("AI did not generate any valid flashcards.")
+
+    return cards[:card_count]

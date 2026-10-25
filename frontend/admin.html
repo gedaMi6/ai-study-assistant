@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Admin | AI STUDY ASSISTANT</title>
+    <title>Admin | KANIA.AI</title>
 
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/mobile.css">
@@ -691,7 +691,257 @@
                 flex-basis: 100%;
             }
         }
-    </style>
+
+/* Teacher notification dropdown, isolated from other page components. */
+.teacher-notifications {
+    position: relative;
+    flex: 0 0 auto;
+    margin-left: auto;
+    margin-right: 18px;
+}
+
+.teacher-notification-button {
+    position: relative;
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border, rgba(255,255,255,.12));
+    border-radius: 12px;
+    background: var(--panel, rgba(255,255,255,.045));
+    color: var(--text, #f5f7ff);
+    font-size: 19px;
+    cursor: pointer;
+    transition: background .18s ease, border-color .18s ease;
+}
+
+.teacher-notification-button:hover {
+    background: var(--panel-hover, rgba(255,255,255,.08));
+    border-color: rgba(99,102,241,.65);
+}
+
+.teacher-notification-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg, #080b14);
+    border-radius: 999px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    line-height: 1;
+    font-weight: 800;
+}
+
+.teacher-notification-badge[hidden],
+.teacher-notification-panel[hidden] {
+    display: none !important;
+}
+
+.teacher-notification-panel {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    z-index: 2000;
+    width: 370px;
+    max-width: calc(100vw - 28px);
+    max-height: min(520px, calc(100vh - 100px));
+    overflow: hidden;
+    border: 1px solid var(--border, rgba(255,255,255,.12));
+    border-radius: 16px;
+    background: #101522;
+    color: var(--text, #f5f7ff);
+    box-shadow: 0 22px 65px rgba(0,0,0,.42);
+}
+
+.teacher-notification-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid rgba(255,255,255,.09);
+}
+
+.teacher-notification-panel-header > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.teacher-notification-panel-header strong {
+    font-size: 15px;
+}
+
+.teacher-notification-panel-header span {
+    color: #9ca6bd;
+    font-size: 12px;
+}
+
+.teacher-notification-panel-header button {
+    border: 0;
+    padding: 5px 0 5px 8px;
+    background: transparent;
+    color: #a5b4fc;
+    font-size: 12px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.teacher-notification-panel-header button:disabled {
+    opacity: .45;
+    cursor: default;
+}
+
+.teacher-notification-list {
+    max-height: 430px;
+    overflow-y: auto;
+}
+
+.teacher-notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 15px;
+    border-bottom: 1px solid rgba(255,255,255,.065);
+    cursor: pointer;
+    transition: background .15s ease;
+}
+
+.teacher-notification-item:hover {
+    background: rgba(129,140,248,.10);
+}
+
+.teacher-notification-item:last-child {
+    border-bottom: 0;
+}
+
+.teacher-notification-item.unread {
+    background: rgba(99,102,241,.095);
+}
+
+.teacher-notification-dot {
+    width: 8px;
+    height: 8px;
+    margin-top: 6px;
+    flex: 0 0 8px;
+    border-radius: 50%;
+    background: transparent;
+}
+
+.teacher-notification-item.unread .teacher-notification-dot {
+    background: #818cf8;
+    box-shadow: 0 0 0 3px rgba(129,140,248,.13);
+}
+
+.teacher-notification-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.teacher-notification-title {
+    margin-bottom: 5px;
+    color: #f5f7ff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.teacher-notification-message {
+    color: #b2bad0;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.teacher-notification-time {
+    display: block;
+    margin-top: 7px;
+    color: #7f8aa4;
+    font-size: 11px;
+}
+
+.teacher-notification-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.teacher-notification-actions button {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.teacher-notification-view {
+    color: #a5b4fc;
+}
+
+.teacher-notification-read {
+    color: #9ca6bd;
+}
+
+.teacher-notification-actions button:disabled {
+    opacity: .5;
+    cursor: wait;
+}
+
+.teacher-notification-empty,
+.teacher-notification-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 28px 20px;
+    color: #9ca6bd;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.teacher-notification-empty strong {
+    color: #e5e7eb;
+    font-size: 13px;
+}
+
+.teacher-notification-empty-icon {
+    font-size: 24px;
+}
+
+.teacher-notification-error {
+    color: #fca5a5;
+}
+
+@media (max-width: 600px) {
+    .teacher-notifications {
+        margin-left: auto;
+        margin-right: 10px;
+    }
+
+    .teacher-notification-panel {
+        position: fixed;
+        top: 82px;
+        right: 12px;
+        width: 370px;
+        max-width: calc(100vw - 24px);
+    }
+}
+
+</style>
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
 </head>
 
 <body>
@@ -708,7 +958,7 @@
             <div class="brand-icon">AI</div>
 
             <div class="brand-text">
-                <strong>AI STUDY ASSISTANT</strong>
+                <strong>KANIA.AI</strong>
                 <span>Administration</span>
             </div>
         </div>
@@ -725,6 +975,7 @@
             <span>Documents</span>
         </button>
 
+
         <button class="nav-item" data-view="students">
             <span class="nav-icon">♙</span>
             <span>Students</span>
@@ -734,6 +985,15 @@
             <span class="nav-icon">◒</span>
             <span>Analytics</span>
         </button>
+
+        <button class="nav-item" data-view="exams">
+            <span class="nav-icon">✓</span>
+            <span>Exams</span>
+        </button>
+<button class="nav-item" data-view="student-status">
+  <span class="nav-icon">◉</span>
+  <span>Student Status</span>
+</button>
 
         <div class="sidebar-bottom">
 
@@ -774,8 +1034,38 @@
                 </h1>
 
                 <p class="subtitle" id="pageSubtitle">
-                    Overview of your AI STUDY ASSISTANT.
+                    Overview of your KANIA.AI.
                 </p>
+            </div>
+
+
+            <div class="teacher-notifications">
+                <button
+                    class="teacher-notification-button"
+                    id="teacherNotificationButton"
+                    type="button"
+                    aria-label="Notifications"
+                    aria-expanded="false"
+                    aria-controls="teacherNotificationPanel"
+                >
+                    <span aria-hidden="true">🔔</span>
+                    <span class="teacher-notification-badge" id="teacherNotificationBadge" hidden>0</span>
+                </button>
+
+                <div class="teacher-notification-panel" id="teacherNotificationPanel" hidden>
+                    <div class="teacher-notification-panel-header">
+                        <div>
+                            <strong>Notifications</strong>
+                            <span id="teacherNotificationCount">0 unread</span>
+                        </div>
+                        <button type="button" id="teacherMarkAllNotificationsRead">
+                            Mark all read
+                        </button>
+                    </div>
+                    <div class="teacher-notification-list" id="teacherNotificationList" aria-live="polite">
+                        <div class="teacher-notification-empty">Loading notifications...</div>
+                    </div>
+                </div>
             </div>
 
             <div class="admin-user">
@@ -1070,6 +1360,692 @@
              ANALYTICS VIEW
         ====================================================== -->
 
+        <section class="view" id="view-exams">
+
+            <div class="view-heading">
+                <div>
+                    <div class="eyebrow">TEACHER EXAMS</div>
+                    <h2>Create Exams for Students</h2>
+                    <p>
+                        Create your own questions, build tests, and assign them
+                        to students.
+                    </p>
+                </div>
+
+                <button class="primary-btn" id="createTeacherExamBtn">
+                    + Create Exam
+                </button>
+            </div>
+
+            <div
+                class="admin-card"
+                id="examEditorPanel"
+                style="display:none;"
+            >
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <button
+                            class="btn"
+                            id="backToExamsBtn"
+                            type="button"
+                        >
+                            ← Back to Exams
+                        </button>
+
+                    </div>
+
+                    <span id="examEditorStatus">
+                        Draft
+                    </span>
+
+                </div>
+
+                <div style="padding:24px;">
+
+                    <div style="margin-bottom:24px;">
+
+                        <h2 id="examEditorTitle">
+                            Exam
+                        </h2>
+
+                        <p
+                            id="examEditorDescription"
+                            class="subtitle"
+                        ></p>
+
+                    </div>
+
+                    <div class="panel">
+
+                        <div class="panel-header">
+
+                            <div>
+                                <h3>Questions</h3>
+                                <span id="examQuestionCount">
+                                    0 questions
+                                </span>
+                            </div>
+
+                            <button
+                                class="primary-btn"
+                                id="addExamQuestionBtn"
+                                type="button"
+                            >
+                                + Add Question
+                            </button>
+
+                        </div>
+
+                        <div
+                            class="admin-card"
+                            id="addQuestionPanel"
+                            style="display:none; margin:20px;"
+                        >
+
+                            <div class="panel-header">
+
+                                <div>
+                                    <h3>Add Question</h3>
+                                    <span>
+                                        Create a question for this exam.
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <div style="padding:20px;">
+
+                                <div style="margin-bottom:18px;">
+                                    <label
+                                        for="examQuestionType"
+                                        style="display:block; margin-bottom:8px;"
+                                    >
+                                        Question Type
+                                    </label>
+                                    <select
+                                        id="examQuestionType"
+                                        style="width:100%; padding:12px; border-radius:10px;"
+                                    >
+                                        <option value="multiple_choice">Multiple Choice</option>
+                                        <option value="true_false">True / False</option>
+                                        <option value="fill_blank">Fill in the Blank</option>
+                                    </select>
+                                </div>
+
+                                <div style="margin-bottom:18px;">
+
+                                    <label
+                                        for="examQuestionInput"
+                                        style="display:block; margin-bottom:8px;"
+                                    >
+                                        Question
+                                    </label>
+
+                                    <textarea
+                                        id="examQuestionInput"
+                                        rows="4"
+                                        maxlength="2000"
+                                        placeholder="Enter the exam question..."
+                                        style="width:100%; resize:vertical; padding:12px; border-radius:10px;"
+                                    ></textarea>
+
+                                </div>
+
+                                <div id="examOptionsGroup" style="margin-bottom:18px;">
+
+                                    <label
+                                        style="display:block; margin-bottom:8px;"
+                                    >
+                                        Answer Options
+                                    </label>
+
+                                    <input
+                                        id="examOption0"
+                                        type="text"
+                                        placeholder="Option A"
+                                        maxlength="500"
+                                        style="width:100%; margin-bottom:10px;"
+                                    >
+
+                                    <input
+                                        id="examOption1"
+                                        type="text"
+                                        placeholder="Option B"
+                                        maxlength="500"
+                                        style="width:100%; margin-bottom:10px;"
+                                    >
+
+                                    <input
+                                        id="examOption2"
+                                        type="text"
+                                        placeholder="Option C"
+                                        maxlength="500"
+                                        style="width:100%; margin-bottom:10px;"
+                                    >
+
+                                    <input
+                                        id="examOption3"
+                                        type="text"
+                                        placeholder="Option D"
+                                        maxlength="500"
+                                        style="width:100%;"
+                                    >
+
+                                </div>
+
+                                <div id="examCorrectGroup" style="margin-bottom:18px;">
+
+                                    <label
+                                        for="examCorrectAnswer"
+                                        style="display:block; margin-bottom:8px;"
+                                    >
+                                        Correct Answer
+                                    </label>
+
+                                    <select
+                                        id="examCorrectAnswer"
+                                        style="width:100%; padding:12px; border-radius:10px;"
+                                    >
+                                        <option value="0">Option A</option>
+                                        <option value="1">Option B</option>
+                                        <option value="2">Option C</option>
+                                        <option value="3">Option D</option>
+                                    </select>
+
+                                </div>
+
+                                <div
+                                    id="examFillBlankGroup"
+                                    style="display:none; margin-bottom:18px;"
+                                >
+                                    <label
+                                        for="examCorrectTextInput"
+                                        style="display:block; margin-bottom:8px;"
+                                    >
+                                        Expected Answer
+                                    </label>
+                                    <input
+                                        id="examCorrectTextInput"
+                                        type="text"
+                                        maxlength="1000"
+                                        placeholder="Enter the correct text answer..."
+                                        style="width:100%; padding:12px; border-radius:10px; box-sizing:border-box;"
+                                    >
+                                </div>
+
+                                <div style="margin-bottom:22px;">
+
+                                    <label
+                                        for="examExplanationInput"
+                                        style="display:block; margin-bottom:8px;"
+                                    >
+                                        Explanation
+                                    </label>
+
+                                    <textarea
+                                        id="examExplanationInput"
+                                        rows="3"
+                                        maxlength="2000"
+                                        placeholder="Optional explanation for the correct answer..."
+                                        style="width:100%; resize:vertical; padding:12px; border-radius:10px;"
+                                    ></textarea>
+
+                                </div>
+
+                                <div
+                                    style="
+                                        display:flex;
+                                        justify-content:flex-end;
+                                        gap:10px;
+                                    "
+                                >
+
+                                    <button
+                                        class="btn"
+                                        id="cancelAddQuestionBtn"
+                                        type="button"
+                                    >
+                                        Cancel
+                                    </button>
+
+                                    <button
+                                        class="primary-btn"
+                                        id="saveExamQuestionBtn"
+                                        type="button"
+                                    >
+                                        Add Question
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="examQuestionsContainer"
+                            style="padding:20px;"
+                        >
+                            <div class="empty">
+                                No questions yet.
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="panel"
+                        id="assignedStudentsOverviewPanel"
+                        style="display:none; margin-top:20px;"
+                    >
+                        <div class="panel-header">
+                            <div>
+                                <h3>Student Assignments</h3>
+                                <span id="assignedStudentsOverviewCount">
+                                    Loading assignments...
+                                </span>
+                            </div>
+                            <button
+                                class="btn"
+                                id="manageExamAssignmentsBtn"
+                                type="button"
+                            >
+                                Manage Assignments
+                            </button>
+                        </div>
+                        <div
+                            id="assignedStudentsOverview"
+                            style="padding:20px;"
+                        >
+                            <div class="empty">Loading students...</div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="panel"
+                        id="examResultsPanel"
+                        style="margin-top:20px;"
+                    >
+
+                        <div class="panel-header">
+
+                            <div>
+                                <h3>Student Results</h3>
+                                <span id="examResultsCount">
+                                    No submissions yet
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div
+                            id="examResultsContainer"
+                            style="padding:20px;"
+                        >
+                            <div class="empty">
+                                No students have submitted this exam yet.
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="panel"
+                        id="examMonitoringPanel"
+                        style="margin-top:20px;"
+                    >
+
+                        <div class="panel-header">
+                            <div>
+                                <h3>Monitoring Alerts</h3>
+                                <span id="examMonitoringCount">No monitoring alerts yet</span>
+                            </div>
+                        </div>
+
+                        <div
+                            id="examMonitoringContainer"
+                            style="padding:20px;"
+                        >
+                            <div class="empty">
+                                No monitoring alerts yet.
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="panel"
+                        id="studentGradingPanel"
+                        style="margin-top:20px; display:none;"
+                    >
+
+                        <div class="panel-header">
+
+                            <div>
+                                <h3 id="gradingStudentName">
+                                    Grade Student
+                                </h3>
+
+                                <span id="gradingStudentMeta">
+                                    Review the student's submitted answers.
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div
+                            id="studentGradingContainer"
+                            style="padding:20px;"
+                        >
+                            <div class="empty">
+                                Select a student submission to begin grading.
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:flex-end;
+                            gap:10px;
+                            margin-top:20px;
+                        "
+                    >
+
+                        <button
+                            class="primary-btn"
+                            id="publishExamBtn"
+                            type="button"
+                        >
+                            Publish Exam
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div
+                class="admin-card"
+                id="assignExamPanel"
+                style="display:none; margin-top:20px;"
+            >
+                <div class="panel-header">
+                    <div>
+                        <h3>Assign Exam</h3>
+                        <span>
+                            Select the students who should take this exam.
+                        </span>
+                    </div>
+                </div>
+
+                <div style="padding:20px;">
+
+                    <div
+                        id="examStudentList"
+                        style="
+                            max-height:300px;
+                            overflow-y:auto;
+                            margin-bottom:20px;
+                        "
+                    >
+                        <div class="empty">
+                            Loading students...
+                        </div>
+                    </div>
+
+                    <div
+                        style="
+                            display:flex;
+                            gap:10px;
+                            justify-content:flex-end;
+                        "
+                    >
+                        <button
+                            class="btn"
+                            id="cancelAssignExamBtn"
+                            type="button"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            class="primary-btn"
+                            id="assignExamBtn"
+                            type="button"
+                        >
+                            Assign Exam
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div
+                class="admin-card"
+                id="createExamPanel"
+                style="display:none;"
+            >
+
+                <div class="panel-header">
+                    <div>
+                        <h3>Create New Exam</h3>
+                        <span>Start by creating a draft exam.</span>
+                    </div>
+                </div>
+
+                <div style="padding: 24px;">
+
+                    <div style="margin-bottom: 18px;">
+
+                        <label
+                            for="examTitleInput"
+                            style="
+                                display:block;
+                                margin-bottom:8px;
+                                font-weight:600;
+                            "
+                        >
+                            Exam Title
+                        </label>
+
+                        <input
+                            id="examTitleInput"
+                            type="text"
+                            placeholder="e.g. Computer Architecture Midterm"
+                            maxlength="200"
+                            style="width:100%;"
+                        >
+
+                    </div>
+
+                    <div style="margin-bottom: 18px;">
+                        <label
+                            for="examDurationInput"
+                            style="display:block;margin-bottom:8px;font-weight:600;"
+                        >
+                            Exam Duration
+                        </label>
+                        <select
+                            id="examDurationInput"
+                            style="width:100%;padding:12px;border-radius:10px;"
+                        >
+                            <option value="15">15 minutes</option>
+                            <option value="30">30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60" selected>1 hour</option>
+                            <option value="90">1 hour 30 minutes</option>
+                            <option value="120">2 hours</option>
+                            <option value="180">3 hours</option>
+                            <option value="240">4 hours</option>
+                            <option value="360">6 hours</option>
+                            <option value="600">10 hours</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 18px;">
+                        <label for="examPasswordInput"
+                            style="display:block;margin-bottom:8px;font-weight:600;">
+                            Exam Password (Optional)
+                        </label>
+                        <input id="examPasswordInput" type="password"
+                            maxlength="128" autocomplete="new-password"
+                            placeholder="Choose the password students must enter"
+                            style="width:100%;padding:12px;border-radius:10px;">
+                        <small style="display:block;margin-top:6px;opacity:.75;">
+                            Only assigned students can unlock this exam. Leave blank for no password.
+                            Minimum 4 characters.
+                        </small>
+                    </div>
+
+                    <div style="margin-bottom: 18px;">
+                        <label
+                            for="examDeadlineInput"
+                            style="display:block;margin-bottom:8px;font-weight:600;"
+                        >
+                            Hard Deadline (Optional)
+                        </label>
+                        <input
+                            id="examDeadlineInput"
+                            type="datetime-local"
+                            style="width:100%;padding:12px;border-radius:10px;"
+                        >
+                        <small style="display:block;margin-top:6px;opacity:.75;">
+                            Students must finish by this time, even if their timer has time left.
+                        </small>
+                    </div>
+
+                    <div style="margin-bottom: 22px;">
+
+                        <label
+                            for="examDescriptionInput"
+                            style="
+                                display:block;
+                                margin-bottom:8px;
+                                font-weight:600;
+                            "
+                        >
+                            Description
+                        </label>
+
+                        <textarea
+                            id="examDescriptionInput"
+                            rows="4"
+                            maxlength="1000"
+                            placeholder="Describe what this exam covers..."
+                            style="
+                                width:100%;
+                                resize:vertical;
+                                padding:12px;
+                                border-radius:10px;
+                            "
+                        ></textarea>
+
+                    </div>
+
+                    <div style="
+                        display:flex;
+                        gap:10px;
+                        justify-content:flex-end;
+                    ">
+
+                        <button
+                            class="btn"
+                            id="cancelCreateExamBtn"
+                            type="button"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            class="primary-btn"
+                            id="submitCreateExamBtn"
+                            type="button"
+                        >
+                            Create Draft
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="admin-card">
+                <div id="teacherExamsContainer">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <h3>Loading Exams...</h3>
+                        <p>
+                            Loading your teacher-created exams.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+<section class="view" id="view-student-status">
+    <div class="stats-grid student-status-summary">
+        <div class="stat-card">
+            <div class="stat-label">Needs Help</div>
+            <div class="stat-value" id="statusNeedsHelp">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">At Risk</div>
+            <div class="stat-value" id="statusAtRisk">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Performing Well</div>
+            <div class="stat-value" id="statusPerformingWell">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Excellent</div>
+            <div class="stat-value" id="statusExcellent">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">No Activity</div>
+            <div class="stat-value" id="statusNoActivity">0</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div>
+                <h3>Student Performance</h3>
+                <p class="row-meta">
+                    Students are grouped by their current learning status.
+                </p>
+            </div>
+
+            <span id="studentStatusCount">0 students</span>
+        </div>
+
+        <div id="studentStatusContainer">
+            <div class="empty">
+                Loading student status...
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
         <section class="view" id="view-analytics">
 
             <div class="view-heading">
@@ -1166,8 +2142,10 @@
 </div>
 
 
-<script>
 
+    <script src="/js/auth.js"></script>
+<script>
+    let examMonitoringInterval = null;
     let currentView = "dashboard";
     let allDocuments = [];
     let allStudents = [];
@@ -1233,12 +2211,17 @@
 
         dashboard: {
             title: "Dashboard",
-            subtitle: "Overview of your AI STUDY ASSISTANT."
+            subtitle: "Overview of your KANIA.AI."
         },
 
         documents: {
             title: "Documents",
             subtitle: "Manage study materials and indexed knowledge."
+        },
+
+        teachers: {
+            title: "Teacher Accounts",
+            subtitle: "Create and manage teacher accounts."
         },
 
         students: {
@@ -1249,12 +2232,188 @@
         analytics: {
             title: "Analytics",
             subtitle: "Understand learning performance across the platform."
+        },
+
+        exams: {
+            title: "Exams",
+            subtitle: "Create and assign teacher exams to students."
+        },
+
+        quizzes: {
+            title: "Quizzes",
+            subtitle: "Create exams and questions for your students."
+        },
+
+        "student-status": {
+            title: "Student Status",
+            subtitle: "Monitor student performance and identify who may need support."
         }
 
     };
 
 
-    function switchView(view) {
+
+    async function loadStudentStatus() {
+        const container =
+            document.getElementById("studentStatusContainer");
+
+        if (!container) {
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="empty">
+                Loading student status...
+            </div>
+        `;
+
+        try {
+            const response = await fetch(
+                "/api/teacher/student-status",
+                {
+                    credentials: "include"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    `Unable to load student status (${response.status})`
+                );
+            }
+
+            const data = await response.json();
+            const summary = data.summary || {};
+            const students = data.students || [];
+
+            document.getElementById("statusNeedsHelp").textContent =
+                summary.needs_help ?? 0;
+
+            document.getElementById("statusAtRisk").textContent =
+                summary.at_risk ?? 0;
+
+            document.getElementById("statusPerformingWell").textContent =
+                summary.performing_well ?? 0;
+
+            document.getElementById("statusExcellent").textContent =
+                summary.excellent ?? 0;
+
+            document.getElementById("statusNoActivity").textContent =
+                summary.no_activity ?? 0;
+
+            document.getElementById("studentStatusCount").textContent =
+                `${students.length} student${students.length === 1 ? "" : "s"}`;
+
+            if (!students.length) {
+                container.innerHTML = `
+                    <div class="empty">
+                        No students found.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = students.map(student => {
+                const statusClass =
+                    student.status
+                        .toLowerCase()
+                        .replace(/\s+/g, "-");
+
+                const weakTopics =
+                    Array.isArray(student.weak_topics)
+                        ? student.weak_topics
+                        : [];
+
+                const topicsHtml = weakTopics.length
+                    ? weakTopics.map(topic => `
+                        <span class="student-status-topic">
+                            ${escapeHtml(topic.topic)}
+                            (${topic.percentage}%)
+                        </span>
+                    `).join("")
+                    : `<span class="student-status-no-topics">
+                        No weak topics detected
+                    </span>`;
+
+                return `
+                    <div class="student-status-card">
+                        <div class="student-status-main">
+                            <div class="student-status-avatar">
+                                ${escapeHtml(initials(student.name))}
+                            </div>
+
+                            <div class="student-status-info">
+                                <div class="student-status-name">
+                                    ${escapeHtml(student.name)}
+                                </div>
+
+                                <div class="student-status-email">
+                                    ${escapeHtml(student.email)}
+                                </div>
+                            </div>
+
+                            <span class="student-status-badge ${statusClass}">
+                                ${escapeHtml(student.status)}
+                            </span>
+                        </div>
+
+                        <div class="student-status-metrics">
+                            <div>
+                                <span>Average</span>
+                                <strong>${student.average_score}%</strong>
+                            </div>
+
+                            <div>
+                                <span>Quiz Attempts</span>
+                                <strong>${student.quiz_attempts}</strong>
+                            </div>
+
+                            <div>
+                                <span>Last Quiz</span>
+                                <strong>
+                                    ${
+                                        student.last_quiz
+                                            ? formatDate(student.last_quiz)
+                                            : "Never"
+                                    }
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div class="student-status-reason">
+                            <strong>Why:</strong>
+                            ${escapeHtml(student.reason)}
+                        </div>
+
+                        <div class="student-status-topics">
+                            <strong>Weak Topics:</strong>
+                            <div class="student-status-topic-list">
+                                ${topicsHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+        } catch (error) {
+            console.error(
+                "Student Status error:",
+                error
+            );
+
+            container.innerHTML = `
+                <div class="empty">
+                    Unable to load student status.
+                    <br>
+                    <small>
+                        ${escapeHtml(error.message)}
+                    </small>
+                </div>
+            `;
+        }
+    }
+
+
+    async function switchView(view) {
 
         currentView = view;
 
@@ -1289,12 +2448,24 @@
             loadDocuments();
         }
 
+        if (view === "teachers") {
+            await loadTeacherAccounts();
+        }
+
         if (view === "students") {
             loadStudents();
         }
 
         if (view === "analytics") {
             loadAnalytics();
+        }
+
+        if (view === "exams") {
+            loadTeacherTests();
+        }
+
+        if (view === "student-status") {
+            await loadStudentStatus();
         }
     }
 
@@ -1304,11 +2475,2342 @@
 
             button.addEventListener(
                 "click",
-                () => switchView(button.dataset.view)
+                async () => {
+                    await switchView(button.dataset.view);
+                }
             );
 
         });
 
+
+    /* ============================================================
+       TEACHER EXAMS
+    ============================================================ */
+
+    function openCreateExamForm() {
+
+        const panel =
+            document.getElementById("createExamPanel");
+
+        const titleInput =
+            document.getElementById("examTitleInput");
+
+        const descriptionInput =
+            document.getElementById("examDescriptionInput");
+
+        const durationInput =
+            document.getElementById("examDurationInput");
+
+        const deadlineInput =
+            document.getElementById("examDeadlineInput");
+        const passwordInput =
+            document.getElementById("examPasswordInput");
+
+        panel.style.display = "block";
+
+        titleInput.value = "";
+        descriptionInput.value = "";
+        durationInput.value = "60";
+        deadlineInput.value = "";
+        passwordInput.value = "";
+
+        titleInput.focus();
+    }
+
+
+    function closeCreateExamForm() {
+
+        const panel =
+            document.getElementById("createExamPanel");
+
+        panel.style.display = "none";
+    }
+
+
+    async function createTeacherExam() {
+
+        const titleInput =
+            document.getElementById("examTitleInput");
+
+        const descriptionInput =
+            document.getElementById("examDescriptionInput");
+
+        const title =
+            titleInput.value.trim();
+
+        const description =
+            descriptionInput.value.trim();
+
+        const durationMinutes = Number(
+            document.getElementById("examDurationInput").value
+        );
+
+        const deadlineInput =
+            document.getElementById("examDeadlineInput");
+        const passwordInput =
+            document.getElementById("examPasswordInput");
+        const examPassword = passwordInput.value.trim();
+
+        const deadlineValue = deadlineInput.value;
+
+        if (
+            deadlineValue &&
+            new Date(deadlineValue).getTime() <= Date.now()
+        ) {
+            alert("The hard deadline must be in the future.");
+            deadlineInput.focus();
+            return;
+        }
+
+        if (!Number.isInteger(durationMinutes) ||
+            durationMinutes < 1 ||
+            durationMinutes > 600) {
+            alert("Choose a valid exam duration.");
+            return;
+        }
+
+        if (examPassword && examPassword.length < 4) {
+            alert("Exam password must contain at least 4 characters.");
+            passwordInput.focus();
+            return;
+        }
+
+        if (!title) {
+
+            alert("Please enter an exam title.");
+
+            titleInput.focus();
+
+            return;
+        }
+
+        const button =
+            document.getElementById("submitCreateExamBtn");
+
+        button.disabled = true;
+        button.textContent = "Creating...";
+
+        try {
+
+            const response = await fetch(
+                "/api/teacher/exams",
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        title,
+                        description: description || null,
+                        duration_minutes: durationMinutes,
+                        exam_password: examPassword || null,
+                        deadline_at: deadlineValue
+                            ? new Date(deadlineValue).toISOString()
+                            : null
+                    })
+                }
+            );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.detail ||
+                    "Failed to create exam."
+                );
+            }
+
+            closeCreateExamForm();
+
+            await loadTeacherTests();
+
+            alert("Exam draft created successfully.");
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                error.message ||
+                "Failed to create exam."
+            );
+
+        } finally {
+
+            button.disabled = false;
+            button.textContent = "Create Draft";
+
+        }
+    }
+
+
+    document
+        .getElementById("createTeacherExamBtn")
+        .addEventListener(
+            "click",
+            openCreateExamForm
+        );
+
+
+    document
+        .getElementById("cancelCreateExamBtn")
+        .addEventListener(
+            "click",
+            closeCreateExamForm
+        );
+
+
+    document
+        .getElementById("submitCreateExamBtn")
+        .addEventListener(
+            "click",
+            createTeacherExam
+        );
+
+
+    async function publishTeacherExam() {
+
+        const editorPanel =
+            document.getElementById("examEditorPanel");
+
+        const examId =
+            editorPanel?.dataset.examId;
+
+        if (!examId) {
+            alert("No exam is currently open.");
+            return;
+        }
+
+        const button =
+            document.getElementById("publishExamBtn");
+
+        if (!confirm(
+            "Publish this exam? You will not be able to add more questions after publishing."
+        )) {
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Publishing...";
+
+        try {
+
+            const response = await fetch(
+                `/api/teacher/exams/${encodeURIComponent(examId)}/publish`,
+                {
+                    method: "POST",
+                    credentials: "include"
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail || "Failed to publish exam."
+                );
+            }
+
+            const assignedCount =
+                Number(data.assigned_students ?? 0);
+
+            const totalStudents =
+                Number(data.total_students ?? 0);
+
+            alert(
+                `Exam published successfully!\n\n` +
+                `New student assignments: ${assignedCount}\n` +
+                `Total students: ${totalStudents}`
+            );
+
+            await openTeacherExamEditor(examId);
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                error.message ||
+                "Failed to publish exam."
+            );
+
+        } finally {
+
+            button.disabled = false;
+            button.textContent = "Publish Exam";
+
+        }
+    }
+
+
+    document.getElementById("publishExamBtn")
+        ?.addEventListener(
+            "click",
+            publishTeacherExam
+        );
+
+
+    function closeTeacherExamEditor() {
+
+        const editorPanel =
+            document.getElementById("examEditorPanel");
+
+        const listCard =
+            document.getElementById("teacherExamsContainer")
+                ?.closest(".admin-card");
+
+        if (editorPanel) {
+            editorPanel.style.display = "none";
+            delete editorPanel.dataset.examId;
+        }
+
+        if (listCard) {
+            listCard.style.display = "block";
+        }
+
+        loadTeacherTests();
+    }
+
+
+    document.getElementById("backToExamsBtn")
+        ?.addEventListener(
+            "click",
+            closeTeacherExamEditor
+        );
+
+
+    function updateExamQuestionTypeFields() {
+        const type = document.getElementById("examQuestionType")?.value || "multiple_choice";
+        const optionsGroup = document.getElementById("examOptionsGroup");
+        const correctGroup = document.getElementById("examCorrectGroup");
+        const fillGroup = document.getElementById("examFillBlankGroup");
+        const correctSelect = document.getElementById("examCorrectAnswer");
+
+        if (optionsGroup) optionsGroup.style.display = type === "multiple_choice" ? "block" : "none";
+        if (correctGroup) correctGroup.style.display = type === "fill_blank" ? "none" : "block";
+        if (fillGroup) fillGroup.style.display = type === "fill_blank" ? "block" : "none";
+
+        if (correctSelect) {
+            if (type === "true_false") {
+                correctSelect.innerHTML = '<option value="0">False</option><option value="1">True</option>';
+            } else if (type === "multiple_choice") {
+                correctSelect.innerHTML = '<option value="0">Option A</option><option value="1">Option B</option><option value="2">Option C</option><option value="3">Option D</option>';
+            }
+            correctSelect.value = "0";
+        }
+    }
+
+    document.getElementById("examQuestionType")
+        ?.addEventListener("change", updateExamQuestionTypeFields);
+
+
+    function openAddQuestionForm() {
+        const panel = document.getElementById("addQuestionPanel");
+        if (!panel) return;
+
+        panel.style.display = "block";
+        document.getElementById("examQuestionType").value = "multiple_choice";
+        document.getElementById("examQuestionInput").value = "";
+        document.getElementById("examOption0").value = "";
+        document.getElementById("examOption1").value = "";
+        document.getElementById("examOption2").value = "";
+        document.getElementById("examOption3").value = "";
+        document.getElementById("examCorrectAnswer").value = "0";
+        document.getElementById("examCorrectTextInput").value = "";
+        document.getElementById("examExplanationInput").value = "";
+        updateExamQuestionTypeFields();
+        document.getElementById("examQuestionInput").focus();
+    }
+
+
+    function closeAddQuestionForm() {
+        const panel = document.getElementById("addQuestionPanel");
+        if (panel) {
+            panel.style.display = "none";
+        }
+    }
+
+
+    async function saveExamQuestion() {
+        const editorPanel = document.getElementById("examEditorPanel");
+        const examId = editorPanel?.dataset.examId;
+
+        if (!examId) {
+            alert("No exam is currently open.");
+            return;
+        }
+
+        const question = document.getElementById("examQuestionInput").value.trim();
+        const questionType = document.getElementById("examQuestionType").value;
+        const explanation = document.getElementById("examExplanationInput").value.trim();
+
+        const allOptions = [
+            document.getElementById("examOption0").value.trim(),
+            document.getElementById("examOption1").value.trim(),
+            document.getElementById("examOption2").value.trim(),
+            document.getElementById("examOption3").value.trim()
+        ];
+
+        const correctAnswer = Number(document.getElementById("examCorrectAnswer").value);
+        const correctAnswerText = document.getElementById("examCorrectTextInput").value.trim();
+
+        if (!question) {
+            alert("Please enter the question.");
+            return;
+        }
+
+        let options = [];
+        let answerIndex = correctAnswer;
+
+        if (questionType === "multiple_choice") {
+            if (allOptions.some(option => !option)) {
+                alert("Please fill in all four answer options.");
+                return;
+            }
+            options = allOptions;
+        } else if (questionType === "true_false") {
+            options = ["False", "True"];
+        } else if (questionType === "fill_blank") {
+            if (!correctAnswerText) {
+                alert("Please enter the expected text answer.");
+                return;
+            }
+            answerIndex = 0;
+        }
+
+        const button = document.getElementById("saveExamQuestionBtn");
+        button.disabled = true;
+        button.textContent = "Adding...";
+
+        try {
+            const response = await fetch(
+                `/api/teacher/exams/${encodeURIComponent(examId)}/questions`,
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        question,
+                        question_type: questionType,
+                        options,
+                        correct_answer: answerIndex,
+                        correct_answer_text: questionType === "fill_blank" ? correctAnswerText : null,
+                        explanation: explanation || null
+                    })
+                }
+            );
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.detail || "Failed to add question.");
+            }
+
+            closeAddQuestionForm();
+            await openTeacherExamEditor(examId);
+            alert("Question added successfully.");
+        } catch (error) {
+            console.error(error);
+            alert(error.message || "Failed to add question.");
+        } finally {
+            button.disabled = false;
+            button.textContent = "Add Question";
+        }
+    }
+
+
+    document.getElementById("addExamQuestionBtn")
+        ?.addEventListener("click", openAddQuestionForm);
+
+    document.getElementById("saveExamQuestionBtn")
+        ?.addEventListener("click", saveExamQuestion);
+
+    document.getElementById("examQuestionsContainer")
+        ?.addEventListener("click", async function(event) {
+            const button = event.target.closest(
+                "[data-delete-exam-question]"
+            );
+
+            if (!button || button.disabled) {
+                return;
+            }
+
+            const editorPanel =
+                document.getElementById("examEditorPanel");
+
+            const examId = editorPanel?.dataset.examId;
+            const questionId = button.dataset.deleteExamQuestion;
+
+            if (!examId || !questionId) {
+                alert("Could not identify this exam question.");
+                return;
+            }
+
+            if (!window.confirm(
+                "Delete this question from the draft exam? This cannot be undone."
+            )) {
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = "Deleting...";
+
+            try {
+                const response = await fetch(
+                    `/api/teacher/exams/${encodeURIComponent(examId)}/questions/${encodeURIComponent(questionId)}`,
+                    {
+                        method: "DELETE",
+                        credentials: "include"
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail || "Failed to delete question."
+                    );
+                }
+
+                await openTeacherExamEditor(examId);
+            } catch (error) {
+                console.error("Failed to delete exam question:", error);
+                alert(error.message || "Failed to delete question.");
+                button.disabled = false;
+                button.textContent = "Delete";
+            }
+        });
+
+    document.getElementById("cancelAddQuestionBtn")
+        ?.addEventListener(
+            "click",
+            closeAddQuestionForm
+        );
+
+
+    async function openTeacherExamEditor(examId) {
+
+        const examsPanel = document.getElementById("view-exams");
+        const editorPanel = document.getElementById("examEditorPanel");
+        const listCard = document.getElementById("teacherExamsContainer")
+            ?.closest(".admin-card");
+
+        if (!editorPanel) {
+            alert("Exam editor is not available.");
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                `/api/teacher/exams/${encodeURIComponent(examId)}`,
+                {
+                    credentials: "include"
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail || "Failed to load exam."
+                );
+            }
+
+            const exam = data.exam;
+
+            document.getElementById("examEditorTitle").textContent =
+                exam.title || "Exam";
+
+            document.getElementById("examEditorDescription").textContent =
+                exam.description || "No description provided.";
+
+            document.getElementById("examEditorStatus").textContent =
+                exam.status || "draft";
+
+            const questions = exam.questions || [];
+
+            document.getElementById("examQuestionCount").textContent =
+                `${questions.length} question${questions.length === 1 ? "" : "s"}`;
+
+            const questionsContainer =
+                document.getElementById("examQuestionsContainer");
+
+            if (!questions.length) {
+
+                questionsContainer.innerHTML = `
+                    <div class="empty">
+                        No questions yet. Add the first question.
+                    </div>
+                `;
+
+            } else {
+
+                questionsContainer.innerHTML = questions.map(
+                    (question, index) => `
+                        <div
+                            class="row"
+                            style="margin-bottom:12px;"
+                        >
+
+                            <div class="row-icon">
+                                ${index + 1}
+                            </div>
+
+                            <div class="row-info">
+
+                                <div class="row-title">
+                                    ${escapeHtml(question.question)}
+                                </div>
+
+                                <div class="row-meta">
+                                    ${
+                                        question.question_type === "fill_blank"
+                                        ? "Fill in the blank"
+                                        : question.question_type === "true_false"
+                                            ? "True / False"
+                                            : `${(question.options || []).length} options · Multiple choice`
+                                    }
+                                </div>
+
+                            </div>
+
+                            ${
+                                exam.status === "draft"
+                                ? `
+                                    <button
+                                        type="button"
+                                        data-delete-exam-question="${question.id}"
+                                        style="
+                                            padding:8px 12px;
+                                            border:1px solid rgba(255,100,100,.4);
+                                            border-radius:8px;
+                                            background:rgba(255,80,80,.10);
+                                            color:#ff8a8a;
+                                            cursor:pointer;
+                                            flex-shrink:0;
+                                        "
+                                    >Delete</button>
+                                `
+                                : ""
+                            }
+
+                        </div>
+                    `
+                ).join("");
+
+            }
+
+            if (listCard) {
+                listCard.style.display = "none";
+            }
+
+            const createPanel =
+                document.getElementById("createExamPanel");
+
+            if (createPanel) {
+                createPanel.style.display = "none";
+            }
+
+            editorPanel.style.display = "block";
+
+            const addQuestionButton =
+                document.getElementById("addExamQuestionBtn");
+
+            const publishButton =
+                document.getElementById("publishExamBtn");
+
+            const isDraft = exam.status === "draft";
+
+            if (addQuestionButton) {
+                addQuestionButton.style.display =
+                    isDraft ? "inline-flex" : "none";
+            }
+
+            if (publishButton) {
+                publishButton.style.display =
+                    isDraft ? "inline-flex" : "none";
+            }
+
+            const assignPanel =
+                document.getElementById("assignExamPanel");
+
+            if (assignPanel) {
+                // Manual assignment controls stay closed until requested.
+                assignPanel.style.display = "none";
+            }
+
+            const assignedOverviewPanel =
+                document.getElementById("assignedStudentsOverviewPanel");
+
+            if (assignedOverviewPanel) {
+                assignedOverviewPanel.style.display =
+                    isDraft ? "none" : "block";
+            }
+
+            editorPanel.dataset.examId = exam.id;
+
+            if (!isDraft) {
+                await loadExamStudents();
+            }
+
+            if (!isDraft) {
+                await loadExamResults();
+                await loadExamMonitoring();
+                startExamMonitoringPolling();
+            } else {
+                stopExamMonitoringPolling();
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                error.message ||
+                "Failed to open the exam."
+            );
+
+        }
+    }
+
+
+    async function loadExamMonitoring() {
+        const editorPanel =
+            document.getElementById("examEditorPanel");
+
+        const examId =
+            editorPanel?.dataset.examId;
+
+        const container =
+            document.getElementById("examMonitoringContainer");
+
+        const countElement =
+            document.getElementById("examMonitoringCount");
+
+        if (!examId || !container) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `/api/teacher/exam-monitoring?limit=50`,
+                {
+                    credentials: "include"
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail ||
+                    "Failed to load monitoring alerts."
+                );
+            }
+
+            const events =
+                (data.events || []).filter(
+                    event => event.exam_id === examId
+                );
+
+            if (countElement) {
+                countElement.textContent =
+                    events.length +
+                    " alert" +
+                    (events.length === 1 ? "" : "s");
+            }
+
+            if (!events.length) {
+                container.innerHTML = `
+                    <div class="empty">
+                        No monitoring alerts for this exam yet.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML =
+                events.map(event => {
+
+                    const eventType =
+                        String(
+                            event.event_type ||
+                            "MONITORING EVENT"
+                        ).replaceAll("_", " ");
+
+                    const detail =
+                        event.event_detail ||
+                        "No additional details.";
+
+                    const severity =
+                        event.event_type === "FORBIDDEN_KEY"
+                            ? "#b91c1c"
+                            : "#b45309";
+
+                    return `
+                        <div
+                            style="
+                                border:1px solid #e5e7eb;
+                                border-radius:12px;
+                                padding:16px;
+                                margin-bottom:12px;
+                                background:#fff;
+                                color:#111827;
+                            "
+                        >
+
+                            <div
+                                style="
+                                    display:flex;
+                                    justify-content:space-between;
+                                    gap:12px;
+                                    flex-wrap:wrap;
+                                "
+                            >
+
+                                <strong
+                                    style="color:${severity};"
+                                >
+                                    ⚠ ${eventType}
+                                </strong>
+
+                                <span>
+                                    ${formatDate(event.created_at)}
+                                </span>
+
+                            </div>
+
+                            <div style="margin-top:10px;">
+                                <strong>Student:</strong>
+                                ${escapeHtml(
+                                    event.student_name ||
+                                    "Unknown"
+                                )}
+                            </div>
+
+                            <div style="margin-top:4px;">
+                                <strong>Student ID:</strong>
+                                ${event.student_id}
+                            </div>
+
+                            <div style="margin-top:4px;">
+                                <strong>Details:</strong>
+                                ${escapeHtml(detail)}
+                            </div>
+
+                        </div>
+                    `;
+
+                }).join("");
+
+        } catch (error) {
+
+            console.error(error);
+
+            container.innerHTML = `
+                <div class="empty">
+                    Unable to load monitoring alerts.
+                </div>
+            `;
+        }
+    }
+
+
+    function startExamMonitoringPolling() {
+
+        if (examMonitoringInterval) {
+            clearInterval(examMonitoringInterval);
+        }
+
+        examMonitoringInterval = setInterval(
+            () => {
+                const editorPanel =
+                    document.getElementById("examEditorPanel");
+
+                const examId =
+                    editorPanel?.dataset.examId;
+
+                if (!examId) {
+                    return;
+                }
+
+                loadExamMonitoring();
+            },
+            3000
+        );
+    }
+
+
+    function stopExamMonitoringPolling() {
+
+        if (examMonitoringInterval) {
+            clearInterval(examMonitoringInterval);
+            examMonitoringInterval = null;
+        }
+    }
+
+
+    async function loadExamResults() {
+
+        const editorPanel =
+            document.getElementById("examEditorPanel");
+
+        const examId =
+            editorPanel?.dataset.examId;
+
+        const container =
+            document.getElementById("examResultsContainer");
+
+        const count =
+            document.getElementById("examResultsCount");
+
+        if (!examId || !container) {
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="empty">
+                Loading student results...
+            </div>
+        `;
+
+        try {
+
+            const response = await fetch(
+                `/api/teacher/exams/${encodeURIComponent(examId)}/submissions`,
+                {
+                    credentials: "include"
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail ||
+                    "Failed to load student results."
+                );
+            }
+
+            const submissions =
+                data.submissions || [];
+
+            if (count) {
+                count.textContent =
+                    `${submissions.length} submission${submissions.length === 1 ? "" : "s"}`;
+            }
+
+            if (!submissions.length) {
+
+                container.innerHTML = `
+                    <div class="empty">
+                        No students have submitted this exam yet.
+                    </div>
+                `;
+
+                return;
+            }
+
+            container.innerHTML =
+                submissions.map(submission => {
+
+                    const released =
+                        submission.score_released;
+
+                    const percentage =
+                        Number(submission.percentage ?? 0);
+
+                    return `
+                        <div
+                            class="row exam-submission-row"
+                            style="
+                                margin-bottom:12px;
+                                align-items:center;
+                            "
+                        >
+
+                            <div class="row-icon exam-submission-icon">
+                                ${initials(submission.student_name || "?")}
+                            </div>
+
+                            <div class="row-info exam-submission-info">
+
+                                <div class="row-title exam-submission-name">
+                                    ${escapeHtml(
+                                        String(submission.student_name || "").trim() ||
+                                        "Student"
+                                    )}
+                                </div>
+
+                                <div class="row-meta exam-submission-meta">
+                                    ${escapeHtml(
+                                        String(submission.student_email || "").trim()
+                                    )}
+                                    ·
+                                    Submitted
+                                    ${formatDate(
+                                        submission.submitted_at
+                                    )}
+                                </div>
+
+                            </div>
+
+                            <div
+                                class="exam-submission-actions"
+                                style="
+                                    display:flex;
+                                    align-items:center;
+                                    gap:14px;
+                                    margin-left:auto;
+                                    flex-wrap:wrap;
+                                    justify-content:flex-end;
+                                "
+                            >
+
+                                <div
+                                    style="
+                                        text-align:right;
+                                        min-width:80px;
+                                    "
+                                >
+                                    <div
+                                        style="
+                                            font-weight:700;
+                                            font-size:16px;
+                                        "
+                                    >
+                                        ${submission.score}/${
+                                            submission.total_questions
+                                        }
+                                    </div>
+
+                                    <div
+                                        style="
+                                            font-size:12px;
+                                            opacity:.7;
+                                        "
+                                    >
+                                        ${percentage}%
+                                    </div>
+                                </div>
+
+                                <button
+                                    class="btn grade-student-btn"
+                                    type="button"
+                                    data-attempt-id="${
+                                        submission.attempt_id
+                                    }"
+                                    style="margin-right:8px;"
+                                >
+                                    Grade Student
+                                </button>
+
+                                ${
+                                    released
+                                    ? `
+                                        <span class="badge">
+                                            🔓 Released
+                                        </span>
+
+                                        <span
+                                            class="badge"
+                                            style="opacity:.8;"
+                                        >
+                                            ✓ Student notified
+                                        </span>
+                                    `
+                                    : `
+                                        <span class="badge">
+                                            🔒 Not Released
+                                        </span>
+
+                                        <button
+                                            class="primary-btn release-score-btn"
+                                            type="button"
+                                            data-attempt-id="${
+                                                submission.attempt_id
+                                            }"
+                                        >
+                                            Release Score
+                                        </button>
+                                    `
+                                }
+
+                            </div>
+
+                        </div>
+                    `;
+
+                }).join("");
+
+            container
+                .querySelectorAll(".grade-student-btn")
+                .forEach(button => {
+                    button.addEventListener(
+                        "click",
+                        async () => {
+                            const attemptId =
+                                button.dataset.attemptId;
+
+                            if (!attemptId) return;
+
+                            await loadStudentGrading(
+                                attemptId
+                            );
+                        }
+                    );
+                });
+
+
+            container
+                .querySelectorAll(".release-score-btn")
+                .forEach(button => {
+
+                    button.addEventListener(
+                        "click",
+                        async () => {
+
+                            const attemptId =
+                                button.dataset.attemptId;
+
+                            if (!attemptId) {
+                                return;
+                            }
+
+                            if (!confirm(
+                                "Release this score to the student? They will receive a notification."
+                            )) {
+                                return;
+                            }
+
+                            button.disabled = true;
+                            button.textContent =
+                                "Releasing...";
+
+                            try {
+
+                                const releaseResponse =
+                                    await fetch(
+                                        `/api/teacher/exams/submissions/${encodeURIComponent(attemptId)}/release`,
+                                        {
+                                            method: "POST",
+                                            credentials: "include"
+                                        }
+                                    );
+
+                                const releaseData =
+                                    await releaseResponse.json();
+
+                                if (!releaseResponse.ok) {
+                                    throw new Error(
+                                        releaseData.detail ||
+                                        "Failed to release score."
+                                    );
+                                }
+
+                                await loadExamResults();
+
+                            } catch (error) {
+
+                                console.error(error);
+
+                                alert(
+                                    error.message ||
+                                    "Failed to release score."
+                                );
+
+                                button.disabled = false;
+                                button.textContent =
+                                    "Release Score";
+                            }
+
+                        }
+                    );
+
+                });
+
+        } catch (error) {
+
+            console.error(error);
+
+            container.innerHTML = `
+                <div class="empty">
+                    Failed to load student results.
+                </div>
+            `;
+
+            if (count) {
+                count.textContent =
+                    "Unable to load submissions";
+            }
+
+        }
+
+    }
+
+
+    async function loadStudentGrading(attemptId) {
+
+        const panel =
+            document.getElementById("studentGradingPanel");
+
+        const container =
+            document.getElementById("studentGradingContainer");
+
+        const name =
+            document.getElementById("gradingStudentName");
+
+        const meta =
+            document.getElementById("gradingStudentMeta");
+
+        if (!attemptId || !panel || !container) {
+            return;
+        }
+
+        panel.style.display = "block";
+
+        container.innerHTML = `
+            <div class="empty">
+                Loading student submission...
+            </div>
+        `;
+
+        try {
+
+            const response = await fetch(
+                `/api/teacher/exams/submissions/${encodeURIComponent(attemptId)}`,
+                {
+                    credentials: "include"
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail ||
+                    "Failed to load student submission."
+                );
+            }
+
+            const submission = data.submission;
+
+            if (!submission) {
+                throw new Error(
+                    "Student submission was not found."
+                );
+            }
+
+            if (name) {
+                name.textContent =
+                    submission.student_name ||
+                    "Grade Student";
+            }
+
+            if (meta) {
+                meta.textContent =
+                    `${submission.student_email || ""} · ` +
+                    `Score: ${submission.score}/${submission.total_questions} ` +
+                    `(${submission.percentage}%)`;
+            }
+
+            const questions =
+                submission.questions || [];
+
+            if (!questions.length) {
+                container.innerHTML = `
+                    <div class="empty">
+                        No questions were found for this submission.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div
+                    style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                        gap:12px;
+                        margin-bottom:20px;
+                        flex-wrap:wrap;
+                    "
+                >
+                    <div>
+                        <strong>
+                            ${submission.score}/${
+                                submission.total_questions
+                            }
+                        </strong>
+                        <span style="opacity:.7;">
+                            · ${submission.percentage}%
+                        </span>
+                    </div>
+
+                    <span class="badge">
+                        ${
+                            submission.score_released
+                            ? "🔓 Released"
+                            : "🔒 Not Released"
+                        }
+                    </span>
+                </div>
+
+                ${questions.map((question, index) => {
+
+                    const selected =
+                        question.selected_answer;
+
+                    const correct =
+                        question.correct_answer;
+
+                    const isCorrect =
+                        question.is_correct;
+
+                    const options =
+                        Array.isArray(question.options)
+                        ? question.options
+                        : [];
+
+                    return `
+                        <div
+                            style="
+                                border:1px solid rgba(255,255,255,.08);
+                                border-radius:14px;
+                                padding:18px;
+                                margin-bottom:14px;
+                                background:rgba(255,255,255,.025);
+                            "
+                        >
+
+                            <div
+                                style="
+                                    font-size:13px;
+                                    font-weight:700;
+                                    margin-bottom:14px;
+                                "
+                            >
+                                Question ${index + 1}
+                            </div>
+
+                            <div
+                                style="
+                                    font-size:14px;
+                                    line-height:1.6;
+                                    margin-bottom:16px;
+                                "
+                            >
+                                ${escapeHtml(
+                                    question.question || ""
+                                )}
+                            </div>
+
+                            ${
+                                question.question_type === "fill_blank"
+                                ? `
+                                    <div style="display:grid; gap:10px;">
+                                        <div style="
+                                            padding:12px;
+                                            border:1px solid rgba(255,255,255,.08);
+                                            border-radius:9px;
+                                        ">
+                                            <div style="font-size:11px; opacity:.7; margin-bottom:5px;">
+                                                STUDENT ANSWER
+                                            </div>
+                                            <div style="font-size:13px; overflow-wrap:anywhere;">
+                                                ${escapeHtml(question.selected_answer_text || "(No answer)")}
+                                            </div>
+                                        </div>
+                                        <div style="
+                                            padding:12px;
+                                            border:1px solid rgba(34,197,94,.35);
+                                            border-radius:9px;
+                                        ">
+                                            <div style="font-size:11px; opacity:.7; margin-bottom:5px;">
+                                                EXPECTED ANSWER
+                                            </div>
+                                            <div style="font-size:13px; overflow-wrap:anywhere;">
+                                                ${escapeHtml(question.correct_answer_text || question.submitted_correct_answer_text || "(Not set)")}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                                : `
+                                    <div
+                                        style="
+                                            display:grid;
+                                            gap:8px;
+                                        "
+                                    >
+
+                                ${options.map((option, optionIndex) => {
+
+                                    const selectedOption =
+                                        selected === optionIndex;
+
+                                    const correctOption =
+                                        correct === optionIndex;
+
+                                    let border =
+                                        "1px solid rgba(255,255,255,.06)";
+
+                                    if (correctOption) {
+                                        border =
+                                            "1px solid rgba(34,197,94,.45)";
+                                    } else if (selectedOption) {
+                                        border =
+                                            "1px solid rgba(239,68,68,.45)";
+                                    }
+
+                                    return `
+                                        <div
+                                            style="
+                                                padding:10px 12px;
+                                                border:${border};
+                                                border-radius:9px;
+                                                font-size:13px;
+                                            "
+                                        >
+                                            ${escapeHtml(
+                                                String(option)
+                                            )}
+
+                                            ${
+                                                correctOption
+                                                ? `
+                                                    <span
+                                                        style="
+                                                            margin-left:8px;
+                                                            font-size:11px;
+                                                        "
+                                                    >
+                                                        ✓ Correct answer
+                                                    </span>
+                                                `
+                                                : ""
+                                            }
+
+                                            ${
+                                                selectedOption
+                                                ? `
+                                                    <span
+                                                        style="
+                                                            margin-left:8px;
+                                                            font-size:11px;
+                                                        "
+                                                    >
+                                                        ${
+                                                            isCorrect
+                                                            ? "✓ Student answer"
+                                                            : "✗ Student answer"
+                                                        }
+                                                    </span>
+                                                `
+                                                : ""
+                                            }
+
+                                        </div>
+                                    `;
+
+                                }).join("")}
+                                    </div>
+                                `
+                            }
+
+                            <div
+                                style="
+                                    margin-top:14px;
+                                    font-size:12px;
+                                    font-weight:600;
+                                "
+                            >
+                                ${
+                                    isCorrect
+                                    ? "✓ Answer is correct"
+                                    : "✗ Answer is incorrect"
+                                }
+                            </div>
+
+                        </div>
+                    `;
+
+                }).join("")}
+
+            `;
+
+            panel.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            container.innerHTML = `
+                <div class="empty">
+                    Failed to load student submission.
+                </div>
+            `;
+
+            if (name) {
+                name.textContent =
+                    "Grade Student";
+            }
+
+            if (meta) {
+                meta.textContent =
+                    error.message ||
+                    "Failed to load student submission.";
+            }
+
+        }
+    }
+
+
+    async function assignTeacherExam() {
+
+        const editorPanel =
+            document.getElementById("examEditorPanel");
+
+        const examId =
+            editorPanel?.dataset.examId;
+
+        if (!examId) {
+            alert("No exam is currently open.");
+            return;
+        }
+
+        const selectedStudents =
+            Array.from(
+                document.querySelectorAll(
+                    ".exam-student-checkbox:checked"
+                )
+            ).map(
+                checkbox => Number(checkbox.value)
+            );
+
+        if (!selectedStudents.length) {
+            alert("Please select at least one student.");
+            return;
+        }
+
+        const button =
+            document.getElementById("assignExamBtn");
+
+        button.disabled = true;
+        button.textContent = "Assigning...";
+
+        try {
+
+            const response = await fetch(
+                `/api/teacher/exams/${encodeURIComponent(examId)}/assign`,
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        student_ids: selectedStudents
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail || "Failed to assign exam."
+                );
+            }
+
+            alert(
+                data.message ||
+                "Exam assigned successfully."
+            );
+
+            await openTeacherExamEditor(examId);
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                error.message ||
+                "Failed to assign exam."
+            );
+
+        } finally {
+
+            button.disabled = false;
+            button.textContent = "Assign Exam";
+
+        }
+    }
+
+
+    document.getElementById("assignExamBtn")
+        ?.addEventListener(
+            "click",
+            assignTeacherExam
+        );
+
+
+    document.getElementById("manageExamAssignmentsBtn")
+        ?.addEventListener("click", () => {
+            const panel = document.getElementById("assignExamPanel");
+            if (panel) {
+                panel.style.display = "block";
+                panel.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            }
+        });
+
+
+    document.getElementById("cancelAssignExamBtn")
+        ?.addEventListener(
+            "click",
+            () => {
+                const panel =
+                    document.getElementById("assignExamPanel");
+
+                if (panel) {
+                    panel.style.display = "none";
+                }
+            }
+        );
+
+
+    async function loadExamStudents() {
+
+        const container =
+            document.getElementById("examStudentList");
+
+        const overviewContainer =
+            document.getElementById("assignedStudentsOverview");
+
+        const overviewCount =
+            document.getElementById("assignedStudentsOverviewCount");
+
+        const editorPanel =
+            document.getElementById("examEditorPanel");
+
+        const examId =
+            editorPanel?.dataset.examId;
+
+        if (!container && !overviewContainer) return;
+
+        if (container) {
+            container.innerHTML =
+                '<div class="empty">Loading students...</div>';
+        }
+
+        if (overviewContainer) {
+            overviewContainer.innerHTML =
+                '<div class="empty">Loading student assignments...</div>';
+        }
+
+        try {
+            const response = await fetch(
+                "/api/teacher/tasks/students",
+                { credentials: "include" }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail || "Failed to load students."
+                );
+            }
+
+            if (!examId) {
+                throw new Error("No exam is currently open.");
+            }
+
+            const examResponse = await fetch(
+                `/api/teacher/exams/${encodeURIComponent(examId)}`,
+                { credentials: "include" }
+            );
+
+            const examData = await examResponse.json();
+
+            if (!examResponse.ok) {
+                throw new Error(
+                    examData.detail || "Failed to load exam assignments."
+                );
+            }
+
+            const assignedIds = new Set(
+                (examData.exam?.assigned_student_ids || []).map(Number)
+            );
+
+            const students = data.students || [];
+            const assignedCount = students.filter(
+                student => assignedIds.has(Number(student.id))
+            ).length;
+
+            if (overviewCount) {
+                overviewCount.textContent =
+                    `${assignedCount} of ${students.length} students assigned`;
+            }
+
+            if (!students.length) {
+                const empty = '<div class="empty">No students found.</div>';
+                if (container) container.innerHTML = empty;
+                if (overviewContainer) overviewContainer.innerHTML = empty;
+                return;
+            }
+
+            // Visible overview: names and assignment statuses, no checkboxes.
+            if (overviewContainer) {
+                overviewContainer.innerHTML = students.map(student => {
+                    const assigned =
+                        assignedIds.has(Number(student.id));
+
+                    return `
+                        <div style="
+                            display:flex;
+                            align-items:center;
+                            gap:12px;
+                            padding:12px;
+                            border-bottom:1px solid var(--border-color);
+                        ">
+                            <div style="
+                                width:36px;
+                                height:36px;
+                                flex-shrink:0;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                border-radius:50%;
+                                background:var(--surface-color, rgba(127,127,127,.12));
+                                font-weight:700;
+                            ">
+                                ${escapeHtml(
+                                    (student.name || "?").trim().charAt(0).toUpperCase()
+                                )}
+                            </div>
+
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-weight:600;">
+                                    ${escapeHtml(student.name || "Unnamed student")}
+                                </div>
+                                <div style="font-size:13px;opacity:.7;overflow-wrap:anywhere;">
+                                    ${escapeHtml(student.email || "")}
+                                </div>
+                            </div>
+
+                            <span style="
+                                font-size:12px;
+                                font-weight:600;
+                                white-space:nowrap;
+                                color:${assigned
+                                    ? "var(--success-color, #16a34a)"
+                                    : "var(--text-muted, #888)"};
+                            ">
+                                ${assigned ? "Assigned" : "Not assigned"}
+                            </span>
+                        </div>
+                    `;
+                }).join("");
+            }
+
+            // Manual assignment list: available only when its panel is opened.
+            if (container) {
+                container.innerHTML = students.map(student => {
+                    const assigned =
+                        assignedIds.has(Number(student.id));
+
+                    return `
+                        <label style="
+                            display:flex;
+                            align-items:center;
+                            gap:12px;
+                            padding:12px;
+                            border-bottom:1px solid var(--border-color);
+                            cursor:${assigned ? "default" : "pointer"};
+                            opacity:${assigned ? "0.8" : "1"};
+                        ">
+                            <input
+                                type="checkbox"
+                                class="exam-student-checkbox"
+                                value="${student.id}"
+                                ${assigned ? "disabled" : ""}
+                            >
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-weight:600;">
+                                    ${escapeHtml(student.name || "Unnamed student")}
+                                </div>
+                                <div style="font-size:13px;opacity:.7;">
+                                    ${escapeHtml(student.email || "")}
+                                </div>
+                            </div>
+                            <span style="
+                                font-size:12px;
+                                font-weight:600;
+                                white-space:nowrap;
+                                color:${assigned
+                                    ? "var(--success-color, #16a34a)"
+                                    : "var(--text-muted, #888)"};
+                            ">
+                                ${assigned ? "Assigned" : "Not assigned"}
+                            </span>
+                        </label>
+                    `;
+                }).join("");
+            }
+
+        } catch (error) {
+            console.error("Failed to load exam student assignments:", error);
+
+            const message = escapeHtml(
+                error.message || "Failed to load students."
+            );
+            const errorHtml =
+                `<div class="empty">${message}</div>`;
+
+            if (container) container.innerHTML = errorHtml;
+            if (overviewContainer) overviewContainer.innerHTML = errorHtml;
+            if (overviewCount) overviewCount.textContent =
+                "Unable to load assignments";
+        }
+    }
+
+
+    function setupTeacherNotificationDropdown() {
+        const button = document.getElementById("teacherNotificationButton");
+        const panel = document.getElementById("teacherNotificationPanel");
+        const list = document.getElementById("teacherNotificationList");
+        const markAll = document.getElementById("teacherMarkAllNotificationsRead");
+
+        if (!button || !panel || !list) return;
+
+        if (button.dataset.bound === "1") return;
+        button.dataset.bound = "1";
+
+        button.addEventListener("click", async () => {
+            const opening = panel.hidden;
+            panel.hidden = !opening;
+            button.setAttribute("aria-expanded", String(opening));
+
+            if (opening) await loadTeacherExamNotifications();
+        });
+
+        document.addEventListener("click", event => {
+            if (!button.contains(event.target) && !panel.contains(event.target)) {
+                panel.hidden = true;
+                button.setAttribute("aria-expanded", "false");
+            }
+        });
+
+        markAll?.addEventListener("click", async () => {
+            markAll.disabled = true;
+            try {
+                const response = await fetch(
+                    "/api/teacher/exams/notifications/read-all",
+                    { method: "POST", credentials: "include" }
+                );
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    throw new Error(result.detail || "Failed to mark notifications as read.");
+                }
+                await loadTeacherExamNotifications();
+            } catch (error) {
+                console.error("Mark all teacher notifications read:", error);
+                alert(error.message || "Failed to mark notifications as read.");
+            } finally {
+                markAll.disabled = false;
+            }
+        });
+
+        list.addEventListener("click", async event => {
+            const actionButton = event.target.closest("[data-notification-action]");
+            const notificationItem = event.target.closest(".teacher-notification-item");
+
+            // Clicking anywhere on a notification opens its exam.
+            // Explicit action buttons retain their own behavior.
+            if (!actionButton && !notificationItem) return;
+
+            const action = actionButton
+                ? actionButton.dataset.notificationAction
+                : "view";
+            const notificationId = actionButton
+                ? Number(actionButton.dataset.notificationId)
+                : NaN;
+
+            if (action === "read") {
+                if (!Number.isInteger(notificationId) || notificationId <= 0) return;
+                actionButton.disabled = true;
+                try {
+                    const response = await fetch(
+                        `/api/teacher/exams/notifications/${notificationId}/read`,
+                        { method: "POST", credentials: "include" }
+                    );
+                    const result = await response.json().catch(() => ({}));
+                    if (!response.ok) {
+                        throw new Error(result.detail || "Failed to mark notification as read.");
+                    }
+                    await loadTeacherExamNotifications();
+                } catch (error) {
+                    console.error("Mark teacher notification read:", error);
+                    alert(error.message || "Failed to mark notification as read.");
+                    actionButton.disabled = false;
+                }
+                return;
+            }
+
+            if (action === "view") {
+                const examId = actionButton
+                    ? actionButton.dataset.examId
+                    : notificationItem?.dataset.examId;
+                if (!examId) {
+                    alert("This notification does not have an exam linked to it.");
+                    return;
+                }
+
+                if (actionButton) actionButton.disabled = true;
+                try {
+                    // Mark this notification read before opening its exam.
+                    // The unread badge is refreshed by the notification loader.
+                    const item = actionButton
+                        ? actionButton.closest(".teacher-notification-item")
+                        : notificationItem;
+                    const readButton = item?.querySelector(
+                        '[data-notification-action="read"]'
+                    );
+                    const readId = readButton
+                        ? Number(readButton.dataset.notificationId)
+                        : NaN;
+
+                    if (Number.isInteger(readId) && readId > 0) {
+                        const readResponse = await fetch(
+                            `/api/teacher/exams/notifications/${readId}/read`,
+                            { method: "POST", credentials: "include" }
+                        );
+                        const readResult = await readResponse.json().catch(() => ({}));
+
+                        if (!readResponse.ok) {
+                            throw new Error(
+                                readResult.detail || "Failed to mark notification as read."
+                            );
+                        }
+
+                        await loadTeacherExamNotifications();
+                    }
+
+                    // Switch to the Exams view before opening its hidden editor.
+                    await switchView("exams");
+                    await openTeacherExamEditor(examId);
+
+                    const editor = document.getElementById("examEditorPanel");
+
+                    // The editor function handles its own loading and results.
+                    // Do not close the notification if the requested exam did not open.
+                    if (!editor || editor.dataset.examId !== String(examId)) {
+                        return;
+                    }
+
+                    panel.hidden = true;
+                    button.setAttribute("aria-expanded", "false");
+                    editor.scrollIntoView({ behavior: "smooth", block: "start" });
+                } catch (error) {
+                    console.error("Open exam from notification:", error);
+                    alert(error.message || "Unable to open the exam results.");
+                } finally {
+                    if (actionButton) actionButton.disabled = false;
+                }
+            }
+        });
+
+        if (button.dataset.polling !== "1") {
+            button.dataset.polling = "1";
+            window.setInterval(() => {
+                loadTeacherExamNotifications();
+            }, 30000);
+        }
+    }
+
+    function formatTeacherNotificationTime(value) {
+        if (!value) return "Time unavailable";
+        const normalized = String(value).includes("T")
+            ? String(value)
+            : String(value).replace(" ", "T") + "Z";
+        const date = new Date(normalized);
+        if (Number.isNaN(date.getTime())) return String(value);
+        return date.toLocaleString([], {
+            dateStyle: "medium",
+            timeStyle: "short"
+        });
+    }
+
+    async function loadTeacherExamNotifications() {
+        const list = document.getElementById("teacherNotificationList");
+        const count = document.getElementById("teacherNotificationCount");
+        const badge = document.getElementById("teacherNotificationBadge");
+        const markAll = document.getElementById("teacherMarkAllNotificationsRead");
+
+        if (!list || !count || !badge) return;
+
+        setupTeacherNotificationDropdown();
+
+        try {
+            const response = await fetch(
+                "/api/teacher/exams/notifications",
+                { credentials: "include" }
+            );
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || "Failed to load notifications.");
+            }
+
+            const notifications = data.notifications || [];
+            const unreadCount = Number(data.unread_count || 0);
+
+            count.textContent = `${unreadCount} unread`;
+            badge.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
+            badge.hidden = unreadCount < 1;
+            if (markAll) markAll.disabled = unreadCount < 1;
+
+            if (!notifications.length) {
+                list.innerHTML = `
+                    <div class="teacher-notification-empty">
+                        <span class="teacher-notification-empty-icon">🔔</span>
+                        <strong>You're all caught up</strong>
+                        <span>New student submissions will appear here.</span>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = notifications.map(notification => {
+                const isUnread = Number(notification.is_read) === 0;
+                const id = Number(notification.id);
+                const examId = String(notification.reference_id || "");
+
+                return `
+                    <article
+                        class="teacher-notification-item ${isUnread ? "unread" : ""}"
+                        data-exam-id="${escapeHtml(examId)}"
+                        title="Click to view exam submissions"
+                    >
+                        <span class="teacher-notification-dot" aria-hidden="true"></span>
+                        <div class="teacher-notification-content">
+                            <div class="teacher-notification-title">
+                                ${escapeHtml(notification.title || "Exam submitted")}
+                            </div>
+                            <div class="teacher-notification-message">
+                                ${escapeHtml(notification.message || "A student submitted an exam.")}
+                            </div>
+                            <time class="teacher-notification-time">
+                                ${escapeHtml(formatTeacherNotificationTime(notification.created_at))}
+                            </time>
+                            <div class="teacher-notification-actions">
+                                <button
+                                    class="teacher-notification-view"
+                                    type="button"
+                                    data-notification-action="view"
+                                    data-exam-id="${escapeHtml(examId)}"
+                                >View submissions</button>
+                                ${isUnread && Number.isInteger(id) ? `
+                                    <button
+                                        class="teacher-notification-read"
+                                        type="button"
+                                        data-notification-action="read"
+                                        data-notification-id="${id}"
+                                    >Mark read</button>
+                                ` : ""}
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }).join("");
+
+        } catch (error) {
+            console.error("Teacher exam notifications:", error);
+            count.textContent = "Unavailable";
+            badge.hidden = true;
+            list.innerHTML = `
+                <div class="teacher-notification-error" role="alert">
+                    ${escapeHtml(error.message || "Failed to load notifications.")}
+                </div>
+            `;
+        }
+    }
+
+function initializeTeacherNotifications() {
+        setupTeacherNotificationDropdown();
+        void loadTeacherExamNotifications();
+    }
+
+    // Initialize the bell on page load, not only when Exams is opened.
+    if (document.readyState === "loading") {
+        document.addEventListener(
+            "DOMContentLoaded",
+            initializeTeacherNotifications,
+            { once: true }
+        );
+    } else {
+        initializeTeacherNotifications();
+    }
+
+    async function deleteTeacherExam(examId) {
+        const confirmed = window.confirm(
+            "Permanently delete this exam? Its questions, assignments, " +
+            "student submissions, scores, timer sessions, and password " +
+            "records will also be deleted. This action cannot be undone."
+        );
+
+        if (!confirmed) return;
+
+        try {
+            const response = await fetch(
+                `/api/teacher/exams/${encodeURIComponent(examId)}`,
+                {
+                    method: "DELETE",
+                    credentials: "include"
+                }
+            );
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail || "Failed to delete exam."
+                );
+            }
+
+            alert("Exam deleted successfully.");
+            await loadTeacherTests();
+
+        } catch (error) {
+            console.error("Failed to delete exam:", error);
+            alert(error.message || "Failed to delete exam.");
+        }
+    }
+
+
+    async function loadTeacherTests() {
+
+        const container =
+            document.getElementById("teacherExamsContainer");
+
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <h3>Loading Exams...</h3>
+                <p>
+                    Loading your teacher-created exams.
+                </p>
+            </div>
+        `;
+
+        try {
+
+            const response = await fetch(
+                "/api/teacher/exams",
+                {
+                    credentials: "include"
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail || "Failed to load exams."
+                );
+            }
+
+            const exams = data.exams || [];
+
+            if (!exams.length) {
+
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <h3>No Exams Yet</h3>
+                        <p>
+                            Create your first teacher exam for students.
+                        </p>
+                    </div>
+                `;
+
+                return;
+            }
+
+            container.innerHTML = exams.map(exam => `
+
+                <div class="row">
+
+                    <div class="row-icon">📝</div>
+
+                    <div class="row-info">
+
+                        <div class="row-title">
+                            ${escapeHtml(exam.title)}
+                        </div>
+
+                        <div class="row-meta">
+                            ${exam.question_count || 0} questions
+                            ·
+                            ${exam.assigned_students || 0} students
+                            ·
+                            ${formatDate(exam.created_at)}
+                        </div>
+
+                    </div>
+
+                    <span class="badge">
+                        ${escapeHtml(exam.status || "draft")}
+                    </span>
+
+                    <button
+                        class="btn"
+                        type="button"
+                        onclick="openTeacherExamEditor('${exam.id}')"
+                    >
+                        ${exam.status === "draft" ? "Edit Exam" : "View Exam"}
+                    </button>
+
+                    <button
+                        class="btn"
+                        type="button"
+                        style="border: 1px solid #dc2626; color: #dc2626;"
+                        onclick="deleteTeacherExam('${exam.id}')"
+                    >
+                        Delete
+                    </button>
+
+                </div>
+
+            `).join("");
+
+        } catch (error) {
+
+            console.error(error);
+
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">!</div>
+                    <h3>Failed to Load Exams</h3>
+                    <p>
+                        ${escapeHtml(
+                            error.message ||
+                            "Something went wrong."
+                        )}
+                    </p>
+                </div>
+            `;
+
+        }
+    }
+
+
+
+    /* ============================================================
+       TEACHER ACCOUNT MANAGEMENT (ADMIN ONLY)
+    ============================================================ */
+
+    async function loadTeacherAccounts() {
+        const container = document.getElementById("teacherAccountsList");
+        if (!container) return;
+
+        container.innerHTML = '<div class="empty">Loading teacher accounts...</div>';
+
+        try {
+            const response = await fetch("/api/admin/teachers", {
+                credentials: "include",
+                headers: {
+                    "X-Study-Session":
+                        sessionStorage.getItem("study_assistant_auth_session") || ""
+                }
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || "Could not load teacher accounts.");
+            }
+
+            if (!data.teachers || data.teachers.length === 0) {
+                container.innerHTML = '<div class="empty">No teacher accounts yet.</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Name</th><th>Email</th><th>Created</th></tr></thead>
+                        <tbody>
+                            ${data.teachers.map(teacher => `
+                                <tr>
+                                    <td>${escapeHtml(teacher.name)}</td>
+                                    <td>${escapeHtml(teacher.email)}</td>
+                                    <td>${escapeHtml(teacher.created_at || "—")}</td>
+                                </tr>
+                            `).join("")}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        } catch (error) {
+            container.innerHTML = `
+                <div class="empty">Unable to load teachers: ${escapeHtml(error.message)}</div>
+            `;
+        }
+    }
+
+    const createTeacherForm = document.getElementById("createTeacherForm");
+    if (createTeacherForm) {
+        createTeacherForm.addEventListener("submit", async event => {
+            event.preventDefault();
+
+            const button = document.getElementById("createTeacherButton");
+            const message = document.getElementById("teacherFormMessage");
+            button.disabled = true;
+            message.textContent = "Creating teacher account...";
+
+            try {
+                const response = await fetch("/api/admin/teachers", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Study-Session":
+                            sessionStorage.getItem("study_assistant_auth_session") || ""
+                    },
+                    body: JSON.stringify({
+                        name: document.getElementById("teacherNameInput").value.trim(),
+                        email: document.getElementById("teacherEmailInput").value.trim(),
+                        password: document.getElementById("teacherPasswordInput").value
+                    })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail || "Could not create teacher account.");
+                }
+
+                createTeacherForm.reset();
+                message.textContent = "Teacher account created successfully.";
+                await loadTeacherAccounts();
+            } catch (error) {
+                message.textContent = error.message;
+            } finally {
+                button.disabled = false;
+            }
+        });
+    }
 
     /* ============================================================
        AUTH
@@ -1978,23 +5480,13 @@
 
                 topicContainer.innerHTML =
                     data.topics.map(topic => `
-
                         <div class="topic-row">
-
                             <div class="topic-top">
-
-                                <span>
-                                    ${escapeHtml(topic.topic)}
-                                </span>
-
-                                <span class="topic-score">
-                                    ${topic.percentage}%
-                                </span>
-
+                                <span class="topic-name">${escapeHtml(topic.topic)}</span>
+                                <span class="topic-score">${topic.percentage}%</span>
                             </div>
 
                             <div class="progress-track">
-
                                 <div
                                     class="progress-fill"
                                     style="width:${Math.min(
@@ -2002,11 +5494,8 @@
                                         Math.max(0, topic.percentage)
                                     )}%"
                                 ></div>
-
                             </div>
-
                         </div>
-
                     `).join("");
 
             }
@@ -2286,5 +5775,1160 @@
 
 </script>
 
+
+<style>
+/* KANIA teacher exam results: desktop name visibility */
+@media (min-width: 751px) {
+    #examResultsContainer .exam-submission-row .exam-submission-info {
+        display: block !important;
+        flex: 1 1 180px !important;
+        width: auto !important;
+        min-width: 180px !important;
+        max-width: none !important;
+        overflow: visible !important;
+        box-sizing: border-box !important;
+    }
+
+    #examResultsContainer .exam-submission-row .exam-submission-name {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+    }
+
+    #examResultsContainer .exam-submission-row .exam-submission-name {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: auto !important;
+        color: var(--text, inherit) !important;
+        font-size: 13px !important;
+        line-height: 1.4 !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        writing-mode: horizontal-tb !important;
+    }
+
+    #examResultsContainer .exam-submission-row .exam-submission-meta {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: auto !important;
+        margin-top: 4px !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+        writing-mode: horizontal-tb !important;
+    }
+}
+
+
+/* KANIA teacher exam results: mobile layout */
+@media (max-width: 750px) {
+    #examResultsContainer .exam-submission-row {
+        display: flex !important;
+        flex-flow: row wrap !important;
+        align-items: flex-start !important;
+        gap: 10px 12px !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        padding: 14px !important;
+    }
+
+    #examResultsContainer .exam-submission-icon {
+        flex: 0 0 40px !important;
+        width: 40px !important;
+        min-width: 40px !important;
+    }
+
+    #examResultsContainer .exam-submission-info {
+        flex: 1 1 calc(100% - 56px) !important;
+        width: calc(100% - 56px) !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        overflow: visible !important;
+        box-sizing: border-box !important;
+    }
+
+    #examResultsContainer .exam-submission-name {
+        display: block !important;
+        width: 100% !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        writing-mode: horizontal-tb !important;
+        word-break: normal !important;
+        overflow-wrap: anywhere !important;
+        line-height: 1.4 !important;
+    }
+
+    #examResultsContainer .exam-submission-meta {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        writing-mode: horizontal-tb !important;
+        word-break: normal !important;
+        overflow-wrap: anywhere !important;
+        line-height: 1.5 !important;
+    }
+
+    #examResultsContainer .exam-submission-actions {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        margin-left: 0 !important;
+        justify-content: flex-start !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        box-sizing: border-box !important;
+    }
+
+    #examResultsContainer .exam-submission-actions > div {
+        min-width: 64px !important;
+    }
+}
+</style>
+
 </body>
 </html>
+
+<style>
+/* =========================================================
+   KANIA TEACHER MOBILE SIDEBAR
+   ========================================================= */
+@media (max-width: 750px) {
+    .admin-sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        width: 280px !important;
+        height: 100vh !important;
+        z-index: 1000 !important;
+        padding: 20px 14px !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.25s ease !important;
+        overflow-y: auto !important;
+    }
+
+    .admin-sidebar.mobile-open {
+        transform: translateX(0) !important;
+    }
+
+    .admin-sidebar .brand {
+        justify-content: flex-start !important;
+        padding: 10px 12px 25px !important;
+    }
+
+    .admin-sidebar .brand-text,
+    .admin-sidebar .sidebar-label,
+    .admin-sidebar .nav-item span:not(.nav-icon) {
+        display: inline-flex !important;
+    }
+
+    .admin-sidebar .nav-item {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        gap: 14px !important;
+        padding: 13px 14px !important;
+    }
+
+    .admin-sidebar .nav-icon {
+        flex: 0 0 24px !important;
+        width: 24px !important;
+        text-align: center !important;
+    }
+
+    .admin-main {
+        width: 100% !important;
+        margin-left: 0 !important;
+        padding: 70px 15px 25px !important;
+    }
+
+    .admin-mobile-menu {
+        display: flex !important;
+    }
+
+    .admin-sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 999;
+    }
+
+    .admin-sidebar-overlay.active {
+        display: block;
+    }
+}
+
+/* Hamburger */
+.admin-mobile-menu {
+    display: none;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 10px;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 1100;
+}
+</style>
+
+<script>
+(function () {
+    const sidebar = document.querySelector(".admin-sidebar");
+
+    if (!sidebar || document.querySelector(".admin-mobile-menu")) return;
+
+    const menuButton = document.createElement("button");
+    menuButton.type = "button";
+    menuButton.className = "admin-mobile-menu";
+    menuButton.setAttribute("aria-label", "Open teacher menu");
+    menuButton.textContent = "☰";
+
+    const overlay = document.createElement("div");
+    overlay.className = "admin-sidebar-overlay";
+
+    document.body.appendChild(menuButton);
+    document.body.appendChild(overlay);
+
+    function toggleMenu() {
+        const open = sidebar.classList.toggle("mobile-open");
+        overlay.classList.toggle("active", open);
+        menuButton.setAttribute(
+            "aria-label",
+            open ? "Close teacher menu" : "Open teacher menu"
+        );
+    }
+
+    menuButton.addEventListener("click", toggleMenu);
+
+    overlay.addEventListener("click", toggleMenu);
+
+    sidebar.querySelectorAll(".nav-item").forEach(function (item) {
+        item.addEventListener("click", function () {
+            if (window.innerWidth <= 750) {
+                sidebar.classList.remove("mobile-open");
+                overlay.classList.remove("active");
+                menuButton.setAttribute("aria-label", "Open teacher menu");
+            }
+        });
+    });
+})();
+</script>
+
+<style>
+/* ===== TEACHER MOBILE NAV TEXT FIX ===== */
+@media (max-width: 750px) {
+    .admin-sidebar .nav-item {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        white-space: nowrap !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .admin-sidebar .nav-item span:not(.nav-icon) {
+        display: inline-block !important;
+        width: auto !important;
+        min-width: max-content !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        writing-mode: horizontal-tb !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+    }
+
+    .admin-sidebar .nav-icon {
+        flex-shrink: 0 !important;
+    }
+}
+</style>
+
+<style>
+/* ===== TEACHER MOBILE EXAM BAR FIX ===== */
+@media (max-width: 750px) {
+    .admin-sidebar .nav-item[data-view="exams"] {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+        writing-mode: horizontal-tb !important;
+    }
+
+    .admin-sidebar .nav-item[data-view="exams"] .nav-icon {
+        flex: 0 0 24px !important;
+        width: 24px !important;
+        min-width: 24px !important;
+        margin: 0 !important;
+    }
+
+    .admin-sidebar .nav-item[data-view="exams"] span:not(.nav-icon) {
+        display: inline-block !important;
+        width: auto !important;
+        min-width: max-content !important;
+        white-space: nowrap !important;
+        writing-mode: horizontal-tb !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+    }
+}
+</style>
+
+<style>
+/* ============================================================
+   TEACHER EXAMS - MOBILE LAYOUT FIX
+   Keeps exam content horizontal and prevents vertical text.
+============================================================ */
+
+@media (max-width: 750px) {
+
+    /* Exam list rows */
+    #teacherExamsContainer .row {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        gap: 12px !important;
+        padding: 14px !important;
+    }
+
+    #teacherExamsContainer .row-icon {
+        flex: 0 0 40px !important;
+        width: 40px !important;
+        min-width: 40px !important;
+        height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    #teacherExamsContainer .row-info {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        width: auto !important;
+        overflow: hidden !important;
+    }
+
+    #teacherExamsContainer .row-title {
+        display: block !important;
+        width: 100% !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        writing-mode: horizontal-tb !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+    }
+
+    #teacherExamsContainer .row-meta {
+        display: block !important;
+        width: 100% !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        writing-mode: horizontal-tb !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+    }
+
+    #teacherExamsContainer .badge {
+        flex: 0 0 auto !important;
+        white-space: nowrap !important;
+        writing-mode: horizontal-tb !important;
+    }
+
+    #teacherExamsContainer .btn {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: max-content !important;
+        white-space: nowrap !important;
+        writing-mode: horizontal-tb !important;
+    }
+
+
+    /* Open exam question rows */
+    #examQuestionsContainer .row {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        gap: 12px !important;
+    }
+
+    #examQuestionsContainer .row-icon {
+        flex: 0 0 36px !important;
+        width: 36px !important;
+        min-width: 36px !important;
+        height: 36px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    #examQuestionsContainer .row-info {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        width: auto !important;
+        overflow: hidden !important;
+    }
+
+    #examQuestionsContainer .row-title {
+        display: block !important;
+        width: 100% !important;
+        white-space: normal !important;
+        writing-mode: horizontal-tb !important;
+        word-break: normal !important;
+        overflow-wrap: anywhere !important;
+    }
+
+    #examQuestionsContainer .row-meta {
+        display: block !important;
+        width: 100% !important;
+        white-space: nowrap !important;
+        writing-mode: horizontal-tb !important;
+    }
+
+
+    /* Exam editor header */
+    #examEditorPanel > .panel-header {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        flex-wrap: nowrap !important;
+        gap: 10px !important;
+    }
+
+    #examEditorPanel > .panel-header > div {
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+    }
+
+    #examEditorStatus {
+        flex: 0 0 auto !important;
+        white-space: nowrap !important;
+    }
+
+
+    /* Questions panel header */
+    #examEditorPanel .panel .panel-header {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        flex-wrap: nowrap !important;
+        gap: 10px !important;
+    }
+
+    #examEditorPanel .panel .panel-header > div {
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+    }
+
+    #addExamQuestionBtn {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: max-content !important;
+        white-space: nowrap !important;
+    }
+}
+</style>
+
+<style>
+/* ============================================================
+   TEACHER STUDENTS - MOBILE LAYOUT FIX
+============================================================ */
+
+@media (max-width: 750px) {
+
+    #view-students .row {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        gap: 12px !important;
+        padding: 14px !important;
+    }
+
+    #view-students .row-icon {
+        flex: 0 0 40px !important;
+        width: 40px !important;
+        min-width: 40px !important;
+        height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    #view-students .row-info {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        width: auto !important;
+        overflow: hidden !important;
+    }
+
+    #view-students .row-title {
+        display: block !important;
+        width: 100% !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        writing-mode: horizontal-tb !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+    }
+
+    #view-students .row-meta {
+        display: block !important;
+        width: 100% !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        writing-mode: horizontal-tb !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+    }
+
+    #view-students .badge {
+        flex: 0 0 auto !important;
+        white-space: nowrap !important;
+        writing-mode: horizontal-tb !important;
+    }
+
+    #view-students .btn {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: max-content !important;
+        white-space: nowrap !important;
+        writing-mode: horizontal-tb !important;
+    }
+}
+</style>
+
+<style>
+/* ============================================================
+   TEACHER STUDENT DETAIL - MOBILE TABLE FIX
+============================================================ */
+
+@media (max-width: 750px) {
+
+    /* Student detail two-column layout becomes one clean column */
+    #studentDetailView .grid-2-equal {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+        width: 100% !important;
+    }
+
+    #studentDetailView .grid-2-equal > .panel {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    /* Quiz History table */
+    #studentDetailView #studentQuizTable {
+        width: 100% !important;
+    }
+
+    #studentDetailView .table-wrap {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    #studentDetailView table {
+        width: 100% !important;
+        min-width: 420px !important;
+        table-layout: auto !important;
+    }
+
+    #studentDetailView table th,
+    #studentDetailView table td {
+        white-space: nowrap !important;
+        writing-mode: horizontal-tb !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+        vertical-align: middle !important;
+    }
+
+    /* Topic Performance entries */
+    #studentDetailView #studentTopics {
+        width: 100% !important;
+        min-width: 0 !important;
+        overflow: visible !important;
+    }
+
+    #studentDetailView #studentTopics > * {
+        writing-mode: horizontal-tb !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+        white-space: normal !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    /* Keep topic names and performance values horizontal */
+    #studentDetailView #studentTopics div {
+        writing-mode: horizontal-tb !important;
+    }
+
+    #studentDetailView #studentTopics span {
+        writing-mode: horizontal-tb !important;
+        white-space: normal !important;
+    }
+
+}
+</style>
+
+<style>
+/* TEACHER STUDENT TOPIC PERFORMANCE - FINAL MOBILE FIX */
+
+@media (max-width: 750px) {
+
+    #studentDetailView .topic-row {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        writing-mode: horizontal-tb !important;
+    }
+
+    #studentDetailView .topic-top {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        gap: 12px !important;
+        flex-wrap: nowrap !important;
+        writing-mode: horizontal-tb !important;
+    }
+
+    #studentDetailView .topic-top > span:first-child {
+        display: block !important;
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        width: auto !important;
+        white-space: normal !important;
+        writing-mode: horizontal-tb !important;
+        word-break: normal !important;
+        overflow-wrap: anywhere !important;
+    }
+
+    #studentDetailView .topic-top .topic-score {
+        display: block !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: max-content !important;
+        white-space: nowrap !important;
+        writing-mode: horizontal-tb !important;
+    }
+
+    #studentDetailView .topic-row .progress-track {
+        display: block !important;
+        width: 100% !important;
+        margin-top: 8px !important;
+    }
+
+    #studentDetailView .topic-row .progress-fill {
+        display: block !important;
+    }
+
+}
+</style>
+
+<style>
+/* TEACHER STUDENT TOPIC PERFORMANCE - CLEAN MOBILE FIX */
+
+@media (max-width: 750px) {
+    #studentDetailView .topic-row {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    #studentDetailView .topic-top {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 12px !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        flex-wrap: nowrap !important;
+    }
+
+    #studentDetailView .topic-name {
+        display: block !important;
+        flex: 1 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        white-space: normal !important;
+        writing-mode: horizontal-tb !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+    }
+
+    #studentDetailView .topic-score {
+        display: block !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: max-content !important;
+        white-space: nowrap !important;
+        writing-mode: horizontal-tb !important;
+    }
+
+    #studentDetailView .topic-row .progress-track {
+        display: block !important;
+        width: 100% !important;
+        margin-top: 8px !important;
+    }
+}
+</style>
+
+<style>
+@media (max-width: 750px) {
+    /* Keep Teacher > Students table horizontal on phones */
+    #view-students .table-wrap {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    #view-students .table-wrap table {
+        display: table !important;
+        width: 100% !important;
+        min-width: 620px !important;
+        table-layout: auto !important;
+        border-collapse: collapse !important;
+    }
+
+    #view-students .table-wrap thead {
+        display: table-header-group !important;
+    }
+
+    #view-students .table-wrap tbody {
+        display: table-row-group !important;
+    }
+
+    #view-students .table-wrap tr {
+        display: table-row !important;
+        width: auto !important;
+    }
+
+    #view-students .table-wrap th,
+    #view-students .table-wrap td {
+        display: table-cell !important;
+        vertical-align: middle !important;
+        white-space: nowrap !important;
+        writing-mode: horizontal-tb !important;
+    }
+
+    #view-students .table-wrap th:nth-child(1),
+    #view-students .table-wrap td:nth-child(1) {
+        min-width: 210px !important;
+    }
+
+    #view-students .table-wrap th:nth-child(2),
+    #view-students .table-wrap td:nth-child(2) {
+        min-width: 110px !important;
+        text-align: center !important;
+    }
+
+    #view-students .table-wrap th:nth-child(3),
+    #view-students .table-wrap td:nth-child(3) {
+        min-width: 130px !important;
+        text-align: center !important;
+    }
+
+    #view-students .table-wrap th:nth-child(4),
+    #view-students .table-wrap td:nth-child(4) {
+        min-width: 130px !important;
+    }
+
+    #view-students .table-wrap th:nth-child(5),
+    #view-students .table-wrap td:nth-child(5) {
+        min-width: 80px !important;
+        text-align: center !important;
+    }
+
+    #view-students .table-wrap td:first-child > div {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        white-space: nowrap !important;
+    }
+
+    #view-students .table-wrap td:first-child .row-meta {
+        white-space: nowrap !important;
+        writing-mode: horizontal-tb !important;
+    }
+
+    #view-students .table-wrap td strong {
+        white-space: nowrap !important;
+    }
+
+    #view-students .table-wrap .badge,
+    #view-students .table-wrap .btn {
+        writing-mode: horizontal-tb !important;
+        white-space: nowrap !important;
+    }
+}
+</style>
+
+<style id="mobile-horizontal-tables">
+@media (max-width: 750px) {
+
+    /* Teacher > Documents */
+    #view-documents .table-wrap {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    #view-documents table {
+        width: 100% !important;
+        min-width: 560px !important;
+        table-layout: auto !important;
+    }
+
+    #view-documents table tr {
+        display: table-row !important;
+    }
+
+    #view-documents th,
+    #view-documents td {
+        display: table-cell !important;
+        writing-mode: horizontal-tb !important;
+        white-space: nowrap !important;
+        vertical-align: middle !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+    }
+
+    #view-documents th:nth-child(1),
+    #view-documents td:nth-child(1) {
+        min-width: 250px !important;
+        text-align: left !important;
+    }
+
+    #view-documents th:nth-child(2),
+    #view-documents td:nth-child(2) {
+        min-width: 80px !important;
+        text-align: center !important;
+    }
+
+    #view-documents th:nth-child(3),
+    #view-documents td:nth-child(3) {
+        min-width: 130px !important;
+        text-align: left !important;
+    }
+
+    #view-documents th:nth-child(4),
+    #view-documents td:nth-child(4) {
+        min-width: 100px !important;
+        text-align: center !important;
+    }
+
+    #view-documents td strong,
+    #view-documents td .badge,
+    #view-documents td .btn {
+        writing-mode: horizontal-tb !important;
+        white-space: nowrap !important;
+    }
+
+    /* Teacher > Students */
+    #view-students .table-wrap {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    #view-students table {
+        width: 100% !important;
+        min-width: 720px !important;
+        table-layout: auto !important;
+    }
+
+    #view-students table tr {
+        display: table-row !important;
+    }
+
+    #view-students th,
+    #view-students td {
+        display: table-cell !important;
+        writing-mode: horizontal-tb !important;
+        white-space: nowrap !important;
+        vertical-align: middle !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+    }
+
+    #view-students td:first-child > div {
+        flex-direction: row !important;
+        align-items: center !important;
+        white-space: nowrap !important;
+    }
+
+    #view-students td:first-child strong,
+    #view-students td:first-child .row-meta,
+    #view-students td .badge,
+    #view-students td .btn {
+        white-space: nowrap !important;
+        writing-mode: horizontal-tb !important;
+    }
+
+}
+</style>
+
+<style id="student-status-styles">
+#view-student-status {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 200px !important;
+    position: relative !important;
+}
+
+#view-student-status.active {
+    display: block !important;
+}
+
+#studentStatusContainer {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100px !important;
+    position: relative !important;
+}
+
+#studentStatusContainer .student-status-card {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 120px !important;
+    position: relative !important;
+}
+.student-status-summary {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.student-status-card {
+    padding: 18px;
+    border: 1px solid var(--border-color, rgba(255,255,255,.08));
+    border-radius: 14px;
+    background: var(--card-bg, rgba(255,255,255,.03));
+    margin-bottom: 12px;
+}
+
+.student-status-main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.student-status-avatar {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.student-status-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.student-status-name {
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.student-status-email {
+    margin-top: 3px;
+    font-size: 12px;
+    opacity: .65;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.student-status-badge {
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.student-status-badge.no-activity {
+    opacity: .7;
+}
+
+.student-status-badge.at-risk {
+    opacity: .9;
+}
+
+.student-status-badge.performing-well {
+    opacity: .95;
+}
+
+.student-status-badge.excellent {
+    font-weight: 800;
+}
+
+.student-status-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.student-status-metrics > div {
+    padding: 11px 12px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.035);
+}
+
+.student-status-metrics span {
+    display: block;
+    font-size: 11px;
+    opacity: .6;
+    margin-bottom: 4px;
+}
+
+.student-status-metrics strong {
+    display: block;
+    font-size: 14px;
+}
+
+.student-status-reason,
+.student-status-topics {
+    margin-top: 14px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.student-status-topic-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 7px;
+}
+
+.student-status-topic,
+.student-status-no-topics {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 8px;
+    border-radius: 7px;
+    font-size: 11px;
+}
+
+.student-status-no-topics {
+    opacity: .6;
+}
+
+@media (max-width: 900px) {
+    .student-status-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 750px) {
+    #view-student-status {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .student-status-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+    }
+
+    .student-status-card {
+        padding: 14px;
+        border-radius: 12px;
+    }
+
+    .student-status-main {
+        gap: 10px;
+    }
+
+    .student-status-avatar {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+    }
+
+    .student-status-badge {
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+
+    .student-status-metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+    }
+
+    .student-status-metrics > div {
+        padding: 9px;
+    }
+
+    .student-status-metrics strong {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .student-status-summary {
+        grid-template-columns: 1fr !important;
+    }
+
+    .student-status-main {
+        flex-wrap: wrap;
+    }
+
+    .student-status-info {
+        flex: 1 1 calc(100% - 60px);
+    }
+
+    .student-status-badge {
+        margin-left: 48px;
+    }
+
+    .student-status-metrics {
+        grid-template-columns: 1fr;
+    }
+}
+</style>

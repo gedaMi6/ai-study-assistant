@@ -1,5 +1,5 @@
 /*
- * AI Study Assistant - Mobile Navigation
+ * KANIA.AI - Mobile Navigation
  * Handles the shared sidebar on phones.
  */
 
