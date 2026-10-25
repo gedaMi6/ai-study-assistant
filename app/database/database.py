@@ -438,6 +438,7 @@ def initialize_database():
             total_questions INTEGER NOT NULL,
             percentage REAL NOT NULL,
             submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            score_released INTEGER NOT NULL DEFAULT 0,
 
             FOREIGN KEY (test_id)
                 REFERENCES teacher_tests(id)
@@ -714,6 +715,13 @@ def initialize_database():
     )
     ensure_exam_column(
         "teacher_test_answers", "correct_answer_text", "TEXT"
+    )
+
+    # KANIA score-release support for existing databases.
+    # Unreleased is the safe default for historical submissions.
+    ensure_exam_column(
+        "teacher_test_attempts", "score_released",
+        "INTEGER NOT NULL DEFAULT 0"
     )
 
     # KANIA timed teacher-exam support. Safe to run repeatedly.
